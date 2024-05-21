@@ -8,6 +8,7 @@ local Directory = {
         Group = 1,
         Period = 1,
     },
+
     [2] = {
         Abbreviation = "He",
         ElementName = "Helium",
@@ -17,6 +18,7 @@ local Directory = {
         Group = 18,
         Period = 1,
     },
+
     [3] = {
         Abbreviation = "Li",
         ElementName = "Lithium",
@@ -26,6 +28,7 @@ local Directory = {
         Group = 1,
         Period = 2,
     },
+
     [4] = {
         Abbreviation = "Be",
         ElementName = "Beryllium",
@@ -35,6 +38,7 @@ local Directory = {
         Group = 2,
         Period = 2,
     },
+
     [5] = {
         Abbreviation = "B",
         ElementName = "Boron",
@@ -44,6 +48,7 @@ local Directory = {
         Group = 13,
         Period = 2,
     },
+
     [6] = {
         Abbreviation = "C",
         ElementName = "Carbon",
@@ -53,6 +58,7 @@ local Directory = {
         Group = 14,
         Period = 2,
     },
+
     [7] = {
         Abbreviation = "N",
         ElementName = "Nitrogen",
@@ -62,6 +68,7 @@ local Directory = {
         Group = 15,
         Period = 2,
     },
+
     [8] = {
         Abbreviation = "O",
         ElementName = "Oxygen",
@@ -71,6 +78,7 @@ local Directory = {
         Group = 16,
         Period = 2,
     },
+
     [9] = {
         Abbreviation = "F",
         ElementName = "Fluorine",
@@ -80,6 +88,7 @@ local Directory = {
         Group = 17,
         Period = 2,
     },
+
     [10] = {
         Abbreviation = "Ne",
         ElementName = "Neon",
@@ -89,6 +98,7 @@ local Directory = {
         Group = 18,
         Period = 2,
     },
+
     [11] = {
         Abbreviation = "Na",
         ElementName = "Sodium",
@@ -98,6 +108,7 @@ local Directory = {
         Group = 1,
         Period = 3,
     },
+
     [12] = {
         Abbreviation = "Mg",
         ElementName = "Magnesium",
@@ -107,6 +118,7 @@ local Directory = {
         Group = 2,
         Period = 3,
     },
+
     [13] = {
         Abbreviation = "Al",
         ElementName = "Aluminum",
@@ -116,6 +128,7 @@ local Directory = {
         Group = 13,
         Period = 3,
     },
+
     [14] = {
         Abbreviation = "Si",
         ElementName = "Silicon",
@@ -125,6 +138,7 @@ local Directory = {
         Group = 14,
         Period = 3,
     },
+
     [15] = {
         Abbreviation = "P",
         ElementName = "Phosphorus",
@@ -134,6 +148,7 @@ local Directory = {
         Group = 15,
         Period = 3,
     },
+
     [16] = {
         Abbreviation = "S",
         ElementName = "Sulfur",
@@ -143,6 +158,7 @@ local Directory = {
         Group = 16,
         Period = 3,
     },
+
     [17] = {
         Abbreviation = "Cl",
         ElementName = "Chlorine",
@@ -152,6 +168,7 @@ local Directory = {
         Group = 17,
         Period = 3,
     },
+
     [18] = {
         Abbreviation = "Ar",
         ElementName = "Argon",
@@ -161,6 +178,7 @@ local Directory = {
         Group = 18,
         Period = 3,
     },
+
     [19] = {
         Abbreviation = "K",
         ElementName = "Potassium",
@@ -170,6 +188,7 @@ local Directory = {
         Group = 1,
         Period = 4,
     },
+
     [20] = {
         Abbreviation = "Ca",
         ElementName = "Calcium",
@@ -179,6 +198,7 @@ local Directory = {
         Group = 2,
         Period = 4,
     },
+    
 }
 
 return Directory
