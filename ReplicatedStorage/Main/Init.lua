@@ -32,7 +32,9 @@ function Init.ClientListener()
     for _, v in(GUI.InteractiveElements:GetChildren()) do 
         if v.Name == Dictionary[v.Name] then 
             local ElementNumber : number = tonumber(v.Name)
-            
+            v.Symbol.Text = Dictionary[ElementNumber].Abbreviation
+            v.AtomicMass.Text = Dictionary[ElementNumber].AtomicMass
+            v.ElementName.Text = Dictionary[ElementNumber].ElementName
         end
     end
 
