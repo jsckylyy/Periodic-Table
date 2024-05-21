@@ -499,6 +499,106 @@ local Directory = {
         Period = 5,
         Description = "Tin is a soft, malleable metal that resists corrosion and is used in alloys such as bronze and solder, as well as in tin plating to protect other metals."
     },
+    [51] = {
+        Abbreviation = "Sb",
+        ElementName = "Antimony",
+        AtomicNumber = 51,
+        AtomicMass = 121.76,
+        ElementGroup = "Metalloid",
+        Group = 15,
+        Period = 5,
+        Description = "Antimony(III) sulfide, Sb2S3, was recognized in predynastic Egypt as an eye cosmetic (kohl) as early as about 3100 BC, when the cosmetic palette was invented."
+    },
+    [52] = {
+        Abbreviation = "Te",
+        ElementName = "Tellurium",
+        AtomicNumber = 52,
+        AtomicMass = 127.6,
+        ElementGroup = "Metalloid",
+        Group = 16,
+        Period = 5,
+        Description = "Tellurium compounds are used as pigments for ceramics."
+    },
+    [53] = {
+        Abbreviation = "I",
+        ElementName = "Iodine",
+        AtomicNumber = 53,
+        AtomicMass = 126.90447,
+        ElementGroup = "Reactive Nonmetal",
+        Group = 17,
+        Period = 5,
+        Description = "Iodine was discovered by accident. In 1811 chemist Bernard Courtois used too much of sulfuric acid in procces of extracting saltpeter from seaweed."
+    },
+    [54] = {
+        Abbreviation = "Xe",
+        ElementName = "Xenon",
+        AtomicNumber = 54,
+        AtomicMass = 131.293,
+        ElementGroup = "Reactive Nonmetal",
+        Group = 18,
+        Period = 5,
+        Description = "Iodine was discovered by accident. In 1811 chemist Bernard Courtois used too much of sulfuric acid in procces of extracting saltpeter from seaweed."
+    },
+    [55] = {
+        Abbreviation = "Cs",
+        ElementName = "Caesium",
+        AtomicNumber = 55,
+        AtomicMass = 132.9054519,
+        ElementGroup = "Alkali Metal",
+        Group = 1,
+        Period = 6,
+        Description = "Caesium is one of only five elemental metals that are liquid at or near room temperature."
+    },
+    [56] = {
+        Abbreviation = "Ba",
+        ElementName = "Barium",
+        AtomicNumber = 56,
+        AtomicMass = 137.327,
+        ElementGroup = "Alkaline Earth Metal",
+        Group = 2,
+        Period = 6,
+        Description = "Alchemists were attracted to stones made of impure barium sulfate because after exposure to light they would glow for years."
+    },
+    [57] = {
+        Abbreviation = "La",
+        ElementName = "Lanthanum",
+        AtomicNumber = 57,
+        AtomicMass = 138.90547,
+        ElementGroup = "Lanthanide",
+        Group = 3,
+        Period = 6,
+        Description = "The first historical application of lanthanum was in gas lantern mantles."
+    },
+    [58] = {
+        Abbreviation = "Ce",
+        ElementName = "Cerium",
+        AtomicNumber = 58,
+        AtomicMass = 140.116,
+        ElementGroup = "Lanthanide",
+        Group = 4,
+        Period = 6,
+        Description = "It is used in the walls of self-cleaning ovens."
+    },
+    [59] = {
+        Abbreviation = "Pr",
+        ElementName = "Praseodymium",
+        AtomicNumber = 59,
+        AtomicMass = 140.90765,
+        ElementGroup = "Lanthanide",
+        Group = 5,
+        Period = 6,
+        Description = "Praseodymium is used for wind turbines."
+    },
+    [60] = {
+        Abbreviation = "Nd",
+        ElementName = "Neodymium",
+        AtomicNumber = 60,
+        AtomicMass = 144.242,
+        ElementGroup = "Lanthanide",
+        Group = 6,
+        Period = 6,
+        Description = "Neodymium compounds were first commercially used as glass dyes in 1927, and they remain a popular additive in glasses."
+    },
 }
 
 return Directory
