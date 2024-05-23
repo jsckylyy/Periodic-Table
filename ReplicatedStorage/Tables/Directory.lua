@@ -593,11 +593,411 @@ local Directory = {
         Abbreviation = "Nd",
         ElementName = "Neodymium",
         AtomicNumber = 60,
-        AtomicMass = 144.242,
+        AtomicMass = 144.24,
         ElementGroup = "Lanthanide",
+        Group = "N/A",
+        Period = 6,
+        Description = "Neodymium is a soft, silvery metal used in powerful magnets, lasers, and various electronic devices."
+    },
+    [61] = {
+        Abbreviation = "Pm",
+        ElementName = "Promethium",
+        AtomicNumber = 61,
+        AtomicMass = 145,
+        ElementGroup = "Lanthanide",
+        Group = "N/A",
+        Period = 6,
+        Description = "Promethium is a rare, radioactive metal used in luminous paint, nuclear batteries, and research."
+    },
+    [62] = {
+        Abbreviation = "Sm",
+        ElementName = "Samarium",
+        AtomicNumber = 62,
+        AtomicMass = 150.36,
+        ElementGroup = "Lanthanide",
+        Group = "N/A",
+        Period = 6,
+        Description = "Samarium is a hard, silvery metal used in magnets, nuclear reactors, and as a catalyst in certain chemical reactions."
+    },
+    [63] = {
+        Abbreviation = "Eu",
+        ElementName = "Europium",
+        AtomicNumber = 63,
+        AtomicMass = 151.96,
+        ElementGroup = "Lanthanide",
+        Group = "N/A",
+        Period = 6,
+        Description = "Europium is a soft, silvery metal used in phosphorescent and fluorescent applications, such as in TV screens and fluorescent lamps."
+    },
+    [64] = {
+        Abbreviation = "Gd",
+        ElementName = "Gadolinium",
+        AtomicNumber = 64,
+        AtomicMass = 157.25,
+        ElementGroup = "Lanthanide",
+        Group = "N/A",
+        Period = 6,
+        Description = "Gadolinium is a silvery-white metal used in MRI contrast agents, neutron radiography, and as a phosphor in color TV tubes."
+    },
+    [65] = {
+        Abbreviation = "Tb",
+        ElementName = "Terbium",
+        AtomicNumber = 65,
+        AtomicMass = 158.93,
+        ElementGroup = "Lanthanide",
+        Group = "N/A",
+        Period = 6,
+        Description = "Terbium is a silvery-gray metal used in solid-state devices, phosphors in fluorescent lamps, and as a dopant in semiconductor materials."
+    },
+    [66] = {
+        Abbreviation = "Dy",
+        ElementName = "Dysprosium",
+        AtomicNumber = 66,
+        AtomicMass = 162.50,
+        ElementGroup = "Lanthanide",
+        Group = "N/A",
+        Period = 6,
+        Description = "Dysprosium is a soft, bright silver metal used in magnets, laser materials, and nuclear reactor control rods."
+    },
+    [67] = {
+        Abbreviation = "Ho",
+        ElementName = "Holmium",
+        AtomicNumber = 67,
+        AtomicMass = 164.93,
+        ElementGroup = "Lanthanide",
+        Group = "N/A",
+        Period = 6,
+        Description = "Holmium is a soft, silvery metal used in laser materials, nuclear reactors, and as a magnetic flux concentrator."
+    },
+    [68] = {
+        Abbreviation = "Er",
+        ElementName = "Erbium",
+        AtomicNumber = 68,
+        AtomicMass = 167.26,
+        ElementGroup = "Lanthanide",
+        Group = "N/A",
+        Period = 6,
+        Description = "Erbium is a silvery-white metal used in fiber-optic communications, laser materials, and nuclear technology."
+    },
+    [69] = {
+        Abbreviation = "Tm",
+        ElementName = "Thulium",
+        AtomicNumber = 69,
+        AtomicMass = 168.93,
+        ElementGroup = "Lanthanide",
+        Group = "N/A",
+        Period = 6,
+        Description = "Thulium is a soft, silver-gray metal used in portable X-ray devices and as a radiation source in nuclear reactors."
+    },
+    [70] = {
+        Abbreviation = "Yb",
+        ElementName = "Ytterbium",
+        AtomicNumber = 70,
+        AtomicMass = 173.05,
+        ElementGroup = "Lanthanide",
+        Group = "N/A",
+        Period = 6,
+        Description = "Ytterbium is a soft, silvery metal used in certain steel alloys, in chemical reducing agents, and in some laser materials."
+    },
+    [71] = {
+        Abbreviation = "Lu",
+        ElementName = "Lutetium",
+        AtomicNumber = 71,
+        AtomicMass = 174.97,
+        ElementGroup = "Lanthanide",
+        Group = "N/A",
+        Period = 6,
+        Description = "Lutetium is a hard, silvery-white metal used in PET scan detectors, catalysts in petroleum refining, and in some cancer treatments."
+    },
+    [72] = {
+        Abbreviation = "Hf",
+        ElementName = "Hafnium",
+        AtomicNumber = 72,
+        AtomicMass = 178.49,
+        ElementGroup = "Transition Metal",
+        Group = 4,
+        Period = 6,
+        Description = "Hafnium is a shiny, silvery metal used in control rods in nuclear reactors, in superalloys, and as a getter in vacuum tubes."
+    },
+    [73] = {
+        Abbreviation = "Ta",
+        ElementName = "Tantalum",
+        AtomicNumber = 73,
+        AtomicMass = 180.95,
+        ElementGroup = "Transition Metal",
+        Group = 5,
+        Period = 6,
+        Description = "Tantalum is a hard, blue-gray metal used in electronics, surgical instruments, and as an alloying agent for its corrosion resistance."
+    },
+    [74] = {
+        Abbreviation = "W",
+        ElementName = "Tungsten",
+        AtomicNumber = 74,
+        AtomicMass = 183.84,
+        ElementGroup = "Transition Metal",
         Group = 6,
         Period = 6,
-        Description = "Neodymium compounds were first commercially used as glass dyes in 1927, and they remain a popular additive in glasses."
+        Description = "Tungsten is a grayish-white metal with the highest melting point of all elements, used in light bulb filaments, cutting tools, and military applications."
+    },
+    [75] = {
+        Abbreviation = "Re",
+        ElementName = "Rhenium",
+        AtomicNumber = 75,
+        AtomicMass = 186.21,
+        ElementGroup = "Transition Metal",
+        Group = 7,
+        Period = 6,
+        Description = "Rhenium is a dense, silvery metal used in high-temperature superalloys, jet engines, and as a catalyst in the petrochemical industry."
+    },
+    [76] = {
+        Abbreviation = "Os",
+        ElementName = "Osmium",
+        AtomicNumber = 76,
+        AtomicMass = 190.23,
+        ElementGroup = "Transition Metal",
+        Group = 8,
+        Period = 6,
+        Description = "Osmium is a hard, brittle, bluish-white metal used in fountain pen nibs, electrical contacts, and as a catalyst in chemical reactions."
+    },
+    [77] = {
+        Abbreviation = "Ir",
+        ElementName = "Iridium",
+        AtomicNumber = 77,
+        AtomicMass = 192.22,
+        ElementGroup = "Transition Metal",
+        Group = 9,
+        Period = 6,
+        Description = "Iridium is a dense, corrosion-resistant metal used in spark plugs, crucibles for high-temperature experiments, and as a hardening agent for platinum."
+    },
+    [78] = {
+        Abbreviation = "Pt",
+        ElementName = "Platinum",
+        AtomicNumber = 78,
+        AtomicMass = 195.08,
+        ElementGroup = "Transition Metal",
+        Group = 10,
+        Period = 6,
+        Description = "Platinum is a dense, malleable, ductile, highly unreactive, precious, silver-white metal used in catalytic converters, jewelry, and medical devices."
+    },
+    [79] = {
+        Abbreviation = "Au",
+        ElementName = "Gold",
+        AtomicNumber = 79,
+        AtomicMass = 196.97,
+        ElementGroup = "Transition Metal",
+        Group = 11,
+        Period = 6,
+        Description = "Gold is a soft, yellow, dense metal used in jewelry, electronics, dentistry, and as a monetary standard in many countries."
+    },
+    [80] = {
+        Abbreviation = "Hg",
+        ElementName = "Mercury",
+        AtomicNumber = 80,
+        AtomicMass = 200.59,
+        ElementGroup = "Transition Metal",
+        Group = 12,
+        Period = 6,
+        Description = "Mercury is a heavy, silvery d-block metal, known for being the only metallic element that is liquid at standard conditions for temperature and pressure."
+    },
+    [81] = {
+        Abbreviation = "Tl",
+        ElementName = "Thallium",
+        AtomicNumber = 81,
+        AtomicMass = 204.38,
+        ElementGroup = "Post-transition Metal",
+        Group = 13,
+        Period = 6,
+        Description = "Thallium is a soft, gray post-transition metal used in electronics, infrared detectors, and historically as a rat poison."
+    },
+    [82] = {
+        Abbreviation = "Pb",
+        ElementName = "Lead",
+        AtomicNumber = 82,
+        AtomicMass = 207.2,
+        ElementGroup = "Post-transition Metal",
+        Group = 14,
+        Period = 6,
+        Description = "Lead is a soft, malleable, heavy metal with a low melting point, used in batteries, radiation shielding, and historically in paints and gasoline additives."
+    },
+    [83] = {
+        Abbreviation = "Bi",
+        ElementName = "Bismuth",
+        AtomicNumber = 83,
+        AtomicMass = 208.98,
+        ElementGroup = "Post-transition Metal",
+        Group = 15,
+        Period = 6,
+        Description = "Bismuth is a brittle, crystalline, white metal with a slight pink tinge, used in medical procedures, cosmetics, and as a replacement for lead in free-machining alloys."
+    },
+    [84] = {
+        Abbreviation = "Po",
+        ElementName = "Polonium",
+        AtomicNumber = 84,
+        AtomicMass = 209,
+        ElementGroup = "Metalloid",
+        Group = 16,
+        Period = 6,
+        Description = "Polonium is a rare and highly radioactive metalloid, used in anti-static devices and as a heat source in space satellites."
+    },
+    [85] = {
+        Abbreviation = "At",
+        ElementName = "Astatine",
+        AtomicNumber = 85,
+        AtomicMass = 210,
+        ElementGroup = "Halogen",
+        Group = 17,
+        Period = 6,
+        Description = "Astatine is a rare, radioactive element, with properties similar to iodine, used in cancer treatment and research."
+    },
+    [86] = {
+        Abbreviation = "Rn",
+        ElementName = "Radon",
+        AtomicNumber = 86,
+        AtomicMass = 222,
+        ElementGroup = "Noble Gas",
+        Group = 18,
+        Period = 6,
+        Description = "Radon is a radioactive noble gas, occurring naturally as a decay product of uranium, used in radiotherapy and as a tracer in geology."
+    },
+    [87] = {
+        Abbreviation = "Fr",
+        ElementName = "Francium",
+        AtomicNumber = 87,
+        AtomicMass = 223,
+        ElementGroup = "Alkali Metal",
+        Group = 1,
+        Period = 7,
+        Description = "Francium is an extremely rare and highly radioactive alkali metal, with applications limited to research in atomic structure."
+    },
+    [88] = {
+        Abbreviation = "Ra",
+        ElementName = "Radium",
+        AtomicNumber = 88,
+        AtomicMass = 226,
+        ElementGroup = "Alkaline Earth Metal",
+        Group = 2,
+        Period = 7,
+        Description = "Radium is a highly radioactive metal formerly used in luminescent paint, now used in medicine for cancer treatment."
+    },
+    [89] = {
+        Abbreviation = "Ac",
+        ElementName = "Actinium",
+        AtomicNumber = 89,
+        AtomicMass = 227,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Actinium is a soft, silvery radioactive metal used as a neutron source and in thermoelectric power sources for spacecraft."
+    },
+    [90] = {
+        Abbreviation = "Th",
+        ElementName = "Thorium",
+        AtomicNumber = 90,
+        AtomicMass = 232.04,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Thorium is a weakly radioactive metal used in nuclear reactors, high-quality lenses, and as a catalyst in petroleum refining."
+    },
+    [91] = {
+        Abbreviation = "Pa",
+        ElementName = "Protactinium",
+        AtomicNumber = 91,
+        AtomicMass = 231.04,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Protactinium is a dense, silvery-gray actinide used in scientific research and has potential applications in nuclear reactors."
+    },
+    [92] = {
+        Abbreviation = "U",
+        ElementName = "Uranium",
+        AtomicNumber = 92,
+        AtomicMass = 238.03,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Uranium is a heavy, silvery-white metal used as fuel in nuclear reactors and in the production of nuclear weapons."
+    },
+    [93] = {
+        Abbreviation = "Np",
+        ElementName = "Neptunium",
+        AtomicNumber = 93,
+        AtomicMass = 237,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Neptunium is a radioactive metal used in neutron detectors and as a precursor in the production of plutonium for nuclear reactors."
+    },
+    [94] = {
+        Abbreviation = "Pu",
+        ElementName = "Plutonium",
+        AtomicNumber = 94,
+        AtomicMass = 244,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Plutonium is a heavy, radioactive metal used as a fuel in nuclear reactors, in nuclear weapons, and as a power source in space missions."
+    },
+    [95] = {
+        Abbreviation = "Am",
+        ElementName = "Americium",
+        AtomicNumber = 95,
+        AtomicMass = 243,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Americium is a radioactive metal used in smoke detectors and as a neutron source in industrial gauging equipment."
+    },
+    [96] = {
+        Abbreviation = "Cm",
+        ElementName = "Curium",
+        AtomicNumber = 96,
+        AtomicMass = 247,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Curium is a hard, dense radioactive metal used in space exploration as a heat source and in research on alpha particle emissions."
+    },
+    [97] = {
+        Abbreviation = "Bk",
+        ElementName = "Berkelium",
+        AtomicNumber = 97,
+        AtomicMass = 247,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Berkelium is a radioactive metal used in scientific research and has potential applications in medicine and nuclear power."
+    },
+    [98] = {
+        Abbreviation = "Cf",
+        ElementName = "Californium",
+        AtomicNumber = 98,
+        AtomicMass = 251,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Californium is a radioactive metal used in neutron radiography, cancer treatment, and as a neutron source in various scientific applications."
+    },
+    [99] = {
+        Abbreviation = "Es",
+        ElementName = "Einsteinium",
+        AtomicNumber = 99,
+        AtomicMass = 252,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Einsteinium is a highly radioactive metal used primarily in scientific research and has no significant commercial applications."
+    },
+    [100] = {
+        Abbreviation = "Fm",
+        ElementName = "Fermium",
+        AtomicNumber = 100,
+        AtomicMass = 257,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Fermium is a synthetic, highly radioactive metal used in scientific research, particularly in the field of nuclear chemistry."
     },
 }
 
