@@ -595,7 +595,7 @@ local Directory = {
         AtomicNumber = 60,
         AtomicMass = 144.24,
         ElementGroup = "Lanthanide",
-        Group = "N/A",
+        Group = 0,
         Period = 6,
         Description = "Neodymium is a soft, silvery metal used in powerful magnets, lasers, and various electronic devices."
     },
@@ -605,7 +605,7 @@ local Directory = {
         AtomicNumber = 61,
         AtomicMass = 145,
         ElementGroup = "Lanthanide",
-        Group = "N/A",
+        Group = 0,
         Period = 6,
         Description = "Promethium is a rare, radioactive metal used in luminous paint, nuclear batteries, and research."
     },
@@ -615,7 +615,7 @@ local Directory = {
         AtomicNumber = 62,
         AtomicMass = 150.36,
         ElementGroup = "Lanthanide",
-        Group = "N/A",
+        Group = 0,
         Period = 6,
         Description = "Samarium is a hard, silvery metal used in magnets, nuclear reactors, and as a catalyst in certain chemical reactions."
     },
@@ -625,7 +625,7 @@ local Directory = {
         AtomicNumber = 63,
         AtomicMass = 151.96,
         ElementGroup = "Lanthanide",
-        Group = "N/A",
+        Group = 0,
         Period = 6,
         Description = "Europium is a soft, silvery metal used in phosphorescent and fluorescent applications, such as in TV screens and fluorescent lamps."
     },
@@ -635,7 +635,7 @@ local Directory = {
         AtomicNumber = 64,
         AtomicMass = 157.25,
         ElementGroup = "Lanthanide",
-        Group = "N/A",
+        Group = 0,
         Period = 6,
         Description = "Gadolinium is a silvery-white metal used in MRI contrast agents, neutron radiography, and as a phosphor in color TV tubes."
     },
@@ -645,7 +645,7 @@ local Directory = {
         AtomicNumber = 65,
         AtomicMass = 158.93,
         ElementGroup = "Lanthanide",
-        Group = "N/A",
+        Group = 0,
         Period = 6,
         Description = "Terbium is a silvery-gray metal used in solid-state devices, phosphors in fluorescent lamps, and as a dopant in semiconductor materials."
     },
@@ -655,7 +655,7 @@ local Directory = {
         AtomicNumber = 66,
         AtomicMass = 162.50,
         ElementGroup = "Lanthanide",
-        Group = "N/A",
+        Group = 0,
         Period = 6,
         Description = "Dysprosium is a soft, bright silver metal used in magnets, laser materials, and nuclear reactor control rods."
     },
@@ -665,7 +665,7 @@ local Directory = {
         AtomicNumber = 67,
         AtomicMass = 164.93,
         ElementGroup = "Lanthanide",
-        Group = "N/A",
+        Group = 0,
         Period = 6,
         Description = "Holmium is a soft, silvery metal used in laser materials, nuclear reactors, and as a magnetic flux concentrator."
     },
@@ -675,7 +675,7 @@ local Directory = {
         AtomicNumber = 68,
         AtomicMass = 167.26,
         ElementGroup = "Lanthanide",
-        Group = "N/A",
+        Group = 0,
         Period = 6,
         Description = "Erbium is a silvery-white metal used in fiber-optic communications, laser materials, and nuclear technology."
     },
@@ -685,7 +685,7 @@ local Directory = {
         AtomicNumber = 69,
         AtomicMass = 168.93,
         ElementGroup = "Lanthanide",
-        Group = "N/A",
+        Group = 0,
         Period = 6,
         Description = "Thulium is a soft, silver-gray metal used in portable X-ray devices and as a radiation source in nuclear reactors."
     },
@@ -695,7 +695,7 @@ local Directory = {
         AtomicNumber = 70,
         AtomicMass = 173.05,
         ElementGroup = "Lanthanide",
-        Group = "N/A",
+        Group = 0,
         Period = 6,
         Description = "Ytterbium is a soft, silvery metal used in certain steel alloys, in chemical reducing agents, and in some laser materials."
     },
@@ -705,7 +705,7 @@ local Directory = {
         AtomicNumber = 71,
         AtomicMass = 174.97,
         ElementGroup = "Lanthanide",
-        Group = "N/A",
+        Group = 0,
         Period = 6,
         Description = "Lutetium is a hard, silvery-white metal used in PET scan detectors, catalysts in petroleum refining, and in some cancer treatments."
     },
@@ -885,7 +885,7 @@ local Directory = {
         AtomicNumber = 89,
         AtomicMass = 227,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Actinium is a soft, silvery radioactive metal used as a neutron source and in thermoelectric power sources for spacecraft."
     },
@@ -895,7 +895,7 @@ local Directory = {
         AtomicNumber = 90,
         AtomicMass = 232.04,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Thorium is a weakly radioactive metal used in nuclear reactors, high-quality lenses, and as a catalyst in petroleum refining."
     },
@@ -905,7 +905,7 @@ local Directory = {
         AtomicNumber = 91,
         AtomicMass = 231.04,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Protactinium is a dense, silvery-gray actinide used in scientific research and has potential applications in nuclear reactors."
     },
@@ -915,7 +915,7 @@ local Directory = {
         AtomicNumber = 92,
         AtomicMass = 238.03,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Uranium is a heavy, silvery-white metal used as fuel in nuclear reactors and in the production of nuclear weapons."
     },
@@ -925,7 +925,7 @@ local Directory = {
         AtomicNumber = 93,
         AtomicMass = 237,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Neptunium is a radioactive metal used in neutron detectors and as a precursor in the production of plutonium for nuclear reactors."
     },
@@ -935,7 +935,7 @@ local Directory = {
         AtomicNumber = 94,
         AtomicMass = 244,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Plutonium is a heavy, radioactive metal used as a fuel in nuclear reactors, in nuclear weapons, and as a power source in space missions."
     },
@@ -945,7 +945,7 @@ local Directory = {
         AtomicNumber = 95,
         AtomicMass = 243,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Americium is a radioactive metal used in smoke detectors and as a neutron source in industrial gauging equipment."
     },
@@ -955,7 +955,7 @@ local Directory = {
         AtomicNumber = 96,
         AtomicMass = 247,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Curium is a hard, dense radioactive metal used in space exploration as a heat source and in research on alpha particle emissions."
     },
@@ -965,7 +965,7 @@ local Directory = {
         AtomicNumber = 97,
         AtomicMass = 247,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Berkelium is a radioactive metal used in scientific research and has potential applications in medicine and nuclear power."
     },
@@ -975,7 +975,7 @@ local Directory = {
         AtomicNumber = 98,
         AtomicMass = 251,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Californium is a radioactive metal used in neutron radiography, cancer treatment, and as a neutron source in various scientific applications."
     },
@@ -985,7 +985,7 @@ local Directory = {
         AtomicNumber = 99,
         AtomicMass = 252,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Einsteinium is a highly radioactive metal used primarily in scientific research and has no significant commercial applications."
     },
@@ -995,7 +995,7 @@ local Directory = {
         AtomicNumber = 100,
         AtomicMass = 257,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Fermium is a synthetic, highly radioactive metal used in scientific research, particularly in the field of nuclear chemistry."
     },
@@ -1005,7 +1005,7 @@ local Directory = {
         AtomicNumber = 101,
         AtomicMass = 258,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Mendelevium is a synthetic, highly radioactive metal named after Dmitri Mendeleev, used primarily in scientific research."
     },
@@ -1015,7 +1015,7 @@ local Directory = {
         AtomicNumber = 102,
         AtomicMass = 259,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Nobelium is a synthetic, highly radioactive metal named after Alfred Nobel, used mainly in scientific research."
     },
@@ -1025,7 +1025,7 @@ local Directory = {
         AtomicNumber = 103,
         AtomicMass = 262,
         ElementGroup = "Actinide",
-        Group = "N/A",
+        Group = 0,
         Period = 7,
         Description = "Lawrencium is a synthetic, highly radioactive metal named after Ernest Lawrence, used for research purposes in nuclear science."
     },
