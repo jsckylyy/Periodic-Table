@@ -49,11 +49,11 @@ function Init.ClientListener()
             v:SetAttribute("ElementGroup", Dictionary[ElementNumber].ElementGroup)
 
             v.Activated:Connect(function() 
-                warn(v.Name .. " selected")
+                warn(v.Name .. " selected");
             end)
 
             v.MouseEnter:Connect(function() 
-
+                Tween(v, 1, "Color", Index[Dictionary[ElementNumber].ElementGroup].Color)
             end)
 
             v.MouseLeave:Connect(function() 
