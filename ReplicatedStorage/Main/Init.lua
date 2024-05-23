@@ -32,12 +32,21 @@ function Init.ClientListener()
 
     for _, v in(GUI.InteractiveElements:GetChildren()) do 
         if v.Name == Dictionary[v.Name] then 
+            --//#ASSUMING v:IsA("TextLabel") and v:IsADescendantOf("GUI") >> true
             local ElementNumber : number = tonumber(v.Name)
-            v.Symbol.Text = Dictionary[ElementNumber].Abbreviation
+            v.Symbol.Text = Dictionary[ElementNumber].Symbol
             v.AtomicMass.Text = Dictionary[ElementNumber].AtomicMass
             v.ElementName.Text = Dictionary[ElementNumber].ElementName
             --
-            v:SetAttribute("Symbol", Dictionary[ElementNumber].Abbreviation)
+
+            for index, value in(Dictionary[v.Name]) do 
+                v:SetAttribute(index, value)
+            end
+
+            --[[
+                #ASSUMING DICTIONARY INDEX IS NON VALID
+
+            v:SetAttribute("Symbol", Dictionary[ElementNumber].Symbol)
             v:SetAttribute("ElementName", Dictionary[ElementNumber].ElementName)
             v:SetAttribute("AtomicNumber", Dictionary[ElementNumber].AtomicNumber)
             v:SetAttribute("Description", Dictionary[ElementNumber].Description)
@@ -47,17 +56,20 @@ function Init.ClientListener()
 
             v:SetAttribute("AtomicMass", Dictionary[ElementNumber].AtomicMass)
             v:SetAttribute("ElementGroup", Dictionary[ElementNumber].ElementGroup)
+            ]]
 
             v.Activated:Connect(function() 
                 warn(v.Name .. " selected");
             end)
 
             v.MouseEnter:Connect(function() 
-                Tween(v, 1, "Color", Index[Dictionary[ElementNumber].ElementGroup].Color)
+                Tween(v, 1, "BackgroundColor", Color3.fromRGB(255,255,255)) --TODO: Make this a gray color
+                Tween(v.ElementName, .5, "TextTransparency", 0)
             end)
 
             v.MouseLeave:Connect(function() 
-
+                Tween(v, 1, "BackgroundColor", Index[Dictionary[ElementNumber].ElementGroup].Color)
+                Tween(v.ElementName, .5, "TextTransparency", 1)
             end)
         end
     end
