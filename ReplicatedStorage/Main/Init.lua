@@ -4,7 +4,8 @@ local Init = {}
 local function Tween(Instance, Duration, Property, Value): ?
 end
 
-local Dictionary : any = require(game.ReplicatedStorage.Tables.Directory)
+local Dictionary : any = require(game.ReplicatedStorage.Dictionaries.Elements)
+local ElementIndex : any = require(game.ReplicatedStorage.Dictionaries.Index)
 
 function Init.ClientListener()
     local Player : Player = game.Players.LocalPlayer 
@@ -35,6 +36,29 @@ function Init.ClientListener()
             v.Symbol.Text = Dictionary[ElementNumber].Abbreviation
             v.AtomicMass.Text = Dictionary[ElementNumber].AtomicMass
             v.ElementName.Text = Dictionary[ElementNumber].ElementName
+            --
+            v:SetAttribute("Symbol", Dictionary[ElementNumber].Abbreviation)
+            v:SetAttribute("ElementName", Dictionary[ElementNumber].ElementName)
+            v:SetAttribute("AtomicNumber", Dictionary[ElementNumber].AtomicNumber)
+            v:SetAttribute("Description", Dictionary[ElementNumber].Description)
+
+            v:SetAttribute("Group", Dictionary[ElementNumber].Group)
+            v:SetAttribute("Period", Dictionary[ElementNumber].Period)
+
+            v:SetAttribute("AtomicMass", Dictionary[ElementNumber].AtomicMass)
+            v:SetAttribute("ElementGroup", Dictionary[ElementNumber].ElementGroup)
+
+            v.Activated:Connect(function() 
+                warn(v.Name .. " selected")
+            end)
+
+            v.MouseEnter:Connect(function() 
+
+            end)
+
+            v.MouseLeave:Connect(function() 
+
+            end)
         end
     end
 
