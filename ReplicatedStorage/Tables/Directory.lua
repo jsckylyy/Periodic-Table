@@ -999,6 +999,186 @@ local Directory = {
         Period = 7,
         Description = "Fermium is a synthetic, highly radioactive metal used in scientific research, particularly in the field of nuclear chemistry."
     },
+    [101] = {
+        Abbreviation = "Md",
+        ElementName = "Mendelevium",
+        AtomicNumber = 101,
+        AtomicMass = 258,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Mendelevium is a synthetic, highly radioactive metal named after Dmitri Mendeleev, used primarily in scientific research."
+    },
+    [102] = {
+        Abbreviation = "No",
+        ElementName = "Nobelium",
+        AtomicNumber = 102,
+        AtomicMass = 259,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Nobelium is a synthetic, highly radioactive metal named after Alfred Nobel, used mainly in scientific research."
+    },
+    [103] = {
+        Abbreviation = "Lr",
+        ElementName = "Lawrencium",
+        AtomicNumber = 103,
+        AtomicMass = 262,
+        ElementGroup = "Actinide",
+        Group = "N/A",
+        Period = 7,
+        Description = "Lawrencium is a synthetic, highly radioactive metal named after Ernest Lawrence, used for research purposes in nuclear science."
+    },
+    [104] = {
+        Abbreviation = "Rf",
+        ElementName = "Rutherfordium",
+        AtomicNumber = 104,
+        AtomicMass = 267,
+        ElementGroup = "Transition Metal",
+        Group = 4,
+        Period = 7,
+        Description = "Rutherfordium is a synthetic, highly radioactive metal named after Ernest Rutherford, with no significant commercial applications, used only in research."
+    },
+    [105] = {
+        Abbreviation = "Db",
+        ElementName = "Dubnium",
+        AtomicNumber = 105,
+        AtomicMass = 270,
+        ElementGroup = "Transition Metal",
+        Group = 5,
+        Period = 7,
+        Description = "Dubnium is a synthetic, highly radioactive metal named after the town of Dubna in Russia, used only in scientific research."
+    },
+    [106] = {
+        Abbreviation = "Sg",
+        ElementName = "Seaborgium",
+        AtomicNumber = 106,
+        AtomicMass = 271,
+        ElementGroup = "Transition Metal",
+        Group = 6,
+        Period = 7,
+        Description = "Seaborgium is a synthetic, highly radioactive metal named after Glenn T. Seaborg, used only in scientific research."
+    },
+    [107] = {
+        Abbreviation = "Bh",
+        ElementName = "Bohrium",
+        AtomicNumber = 107,
+        AtomicMass = 270,
+        ElementGroup = "Transition Metal",
+        Group = 7,
+        Period = 7,
+        Description = "Bohrium is a synthetic, highly radioactive metal named after Niels Bohr, used only in scientific research."
+    },
+    [108] = {
+        Abbreviation = "Hs",
+        ElementName = "Hassium",
+        AtomicNumber = 108,
+        AtomicMass = 277,
+        ElementGroup = "Transition Metal",
+        Group = 8,
+        Period = 7,
+        Description = "Hassium is a synthetic, highly radioactive metal named after the German state of Hesse, used only in scientific research."
+    },
+    [109] = {
+        Abbreviation = "Mt",
+        ElementName = "Meitnerium",
+        AtomicNumber = 109,
+        AtomicMass = 278,
+        ElementGroup = "Transition Metal",
+        Group = 9,
+        Period = 7,
+        Description = "Meitnerium is a synthetic, highly radioactive metal named after Lise Meitner, used only in scientific research."
+    },
+    [110] = {
+        Abbreviation = "Ds",
+        ElementName = "Darmstadtium",
+        AtomicNumber = 110,
+        AtomicMass = 281,
+        ElementGroup = "Transition Metal",
+        Group = 10,
+        Period = 7,
+        Description = "Darmstadtium is a synthetic, highly radioactive metal named after the city of Darmstadt, Germany, used only in scientific research."
+    },
+    [111] = {
+        Abbreviation = "Rg",
+        ElementName = "Roentgenium",
+        AtomicNumber = 111,
+        AtomicMass = 282,
+        ElementGroup = "Transition Metal",
+        Group = 11,
+        Period = 7,
+        Description = "Roentgenium is a synthetic, highly radioactive metal named after Wilhelm Röntgen, used only in scientific research."
+    },
+    [112] = {
+        Abbreviation = "Cn",
+        ElementName = "Copernicium",
+        AtomicNumber = 112,
+        AtomicMass = 285,
+        ElementGroup = "Transition Metal",
+        Group = 12,
+        Period = 7,
+        Description = "Copernicium is a synthetic, highly radioactive metal named after Nicolaus Copernicus, used only in scientific research."
+    },
+    [113] = {
+        Abbreviation = "Nh",
+        ElementName = "Nihonium",
+        AtomicNumber = 113,
+        AtomicMass = 286,
+        ElementGroup = "Post-transition Metal",
+        Group = 13,
+        Period = 7,
+        Description = "Nihonium is a synthetic, highly radioactive metal named after Japan (Nihon), used only in scientific research."
+    },
+    [114] = {
+        Abbreviation = "Fl",
+        ElementName = "Flerovium",
+        AtomicNumber = 114,
+        AtomicMass = 289,
+        ElementGroup = "Post-transition Metal",
+        Group = 14,
+        Period = 7,
+        Description = "Flerovium is a synthetic, highly radioactive metal named after the Flerov Laboratory of Nuclear Reactions, used only in scientific research."
+    },
+    [115] = {
+        Abbreviation = "Mc",
+        ElementName = "Moscovium",
+        AtomicNumber = 115,
+        AtomicMass = 290,
+        ElementGroup = "Post-transition Metal",
+        Group = 15,
+        Period = 7,
+        Description = "Moscovium is a synthetic, highly radioactive metal named after Moscow, Russia, used only in scientific research."
+    },
+    [116] = {
+        Abbreviation = "Lv",
+        ElementName = "Livermorium",
+        AtomicNumber = 116,
+        AtomicMass = 293,
+        ElementGroup = "Post-transition Metal",
+        Group = 16,
+        Period = 7,
+        Description = "Livermorium is a synthetic, highly radioactive metal named after Lawrence Livermore National Laboratory, used only in scientific research."
+    },
+    [117] = {
+        Abbreviation = "Ts",
+        ElementName = "Tennessine",
+        AtomicNumber = 117,
+        AtomicMass = 294,
+        ElementGroup = "Halogen",
+        Group = 17,
+        Period = 7,
+        Description = "Tennessine is a synthetic, highly radioactive element named after Tennessee, USA, used only in scientific research."
+    },
+    [118] = {
+        Abbreviation = "Og",
+        ElementName = "Oganesson",
+        AtomicNumber = 118,
+        AtomicMass = 294,
+        ElementGroup = "Noble Gas",
+        Group = 18,
+        Period = 7,
+        Description = "Oganesson is a synthetic, highly radioactive element named after Yuri Oganessian, used only in scientific research."
+    },
 }
 
 return Directory
