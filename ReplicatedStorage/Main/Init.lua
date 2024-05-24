@@ -1,11 +1,24 @@
 local Init = {}
 --#SERVICE CODE 
 
+local Dictionary : any = require(game.ReplicatedStorage.Dictionaries.Elements)
+local ElementIndex : any = require(game.ReplicatedStorage.Dictionaries.Index)
+
 local function Tween(Instance, Duration, Property, Value): ?
 end
 
-local Dictionary : any = require(game.ReplicatedStorage.Dictionaries.Elements)
-local ElementIndex : any = require(game.ReplicatedStorage.Dictionaries.Index)
+local ApplyAttributes(Target : any, ElementNumber : number): ?
+    Target:SetAttribute("Symbol", Dictionary[ElementNumber].Symbol)
+    Target:SetAttribute("ElementName", Dictionary[ElementNumber].ElementName)
+    Target:SetAttribute("AtomicNumber", Dictionary[ElementNumber].AtomicNumber)
+    Target:SetAttribute("Description", Dictionary[ElementNumber].Description)
+
+    Target:SetAttribute("Group", Dictionary[ElementNumber].Group)
+    Target:SetAttribute("Period", Dictionary[ElementNumber].Period)
+
+    Target:SetAttribute("AtomicMass", Dictionary[ElementNumber].AtomicMass)
+    Target:SetAttribute("ElementGroup", Dictionary[ElementNumber].ElementGroup)
+end
 
 function Init.ClientListener()
     local Player : Player = game.Players.LocalPlayer 
@@ -39,24 +52,14 @@ function Init.ClientListener()
             v.ElementName.Text = Dictionary[ElementNumber].ElementName
             --
 
-            for index, value in(Dictionary[v.Name]) do 
+            for index, value in(Dictionary[ElementNumber]) do 
                 v:SetAttribute(index, value)
             end
 
-            --[[
-                #ASSUMING DICTIONARY INDEX IS NON VALID
-
-            v:SetAttribute("Symbol", Dictionary[ElementNumber].Symbol)
-            v:SetAttribute("ElementName", Dictionary[ElementNumber].ElementName)
-            v:SetAttribute("AtomicNumber", Dictionary[ElementNumber].AtomicNumber)
-            v:SetAttribute("Description", Dictionary[ElementNumber].Description)
-
-            v:SetAttribute("Group", Dictionary[ElementNumber].Group)
-            v:SetAttribute("Period", Dictionary[ElementNumber].Period)
-
-            v:SetAttribute("AtomicMass", Dictionary[ElementNumber].AtomicMass)
-            v:SetAttribute("ElementGroup", Dictionary[ElementNumber].ElementGroup)
-            ]]
+            if v:GetAttribute("Symbol") != Dictionary[ElementNumber] then 
+                --//#FAIL SAFE
+               ApplyAttributes(v, ElementNumber)
+            end
 
             v.Activated:Connect(function() 
                 warn(v.Name .. " selected");
