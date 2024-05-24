@@ -66,13 +66,13 @@ function Init.ClientListener()
             end)
 
             v.MouseEnter:Connect(function() 
-                Tween(v, 1, "BackgroundColor", Color3.fromRGB(255,255,255)) --TODO: Make this a gray color
-                Tween(v.ElementName, .5, "TextTransparency", 0)
+                Tween(v, 1, "BackgroundColor", Color3.fromRGB(255,255,255)); --TODO: Make this a gray color
+                Tween(v.ElementName, .5, "TextTransparency", 0);
             end)
 
             v.MouseLeave:Connect(function() 
-                Tween(v, 1, "BackgroundColor", Index[Dictionary[ElementNumber].ElementGroup].Color)
-                Tween(v.ElementName, .5, "TextTransparency", 1)
+                Tween(v, 1, "BackgroundColor", Index[Dictionary[ElementNumber].ElementGroup].Color);
+                Tween(v.ElementName, .5, "TextTransparency", 1);
             end)
         end
     end
