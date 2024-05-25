@@ -29,7 +29,7 @@ local Information = {
 
     ["Noble Gas"] = {
         Color = Color3.fromRGB(255,255,255)
-    },
+    }, 
 }
 
 return Information
