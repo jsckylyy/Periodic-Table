@@ -104,8 +104,18 @@ end
 function Init.ClientListener()
 	local Player : Player = game.Players.LocalPlayer 
 	local Character : Character = Player.Character or Player.CharacterAdded:Wait() 
+	
 	local GUI : ScreenGui = Player.PlayerGui:WaitForChild("Table")
-
+	local Frame : Frame = GUI.Frame 
+	local Information : Frame = GUI.Information 
+	local InformationName : TextLabel = Information.ElementName
+	local ElementTemplate : TextButton = Information.Template 
+	local InformationAtomicMass : TextLabel = Information.AtomicMass
+	local InformationElementGroup : TextLabel = Information.ElementGroup
+	local InformationPeriod : TextLabel = Information.Period
+	local InformationGroup : TextLabel = Information.Group
+	local InformationDescription : TextLabel = Information.Description
+	
 	--//Initial Load GUI
 	for _, v in(GUI:GetDescendants()) do 
 		if v:IsA("Frame") then 
@@ -121,17 +131,22 @@ function Init.ClientListener()
 			v:SetAttribute("TextTransparency", v.TextTransparency) 
 			v.TextTransparency = 1 
 			v.BackgroundTransparency = 1
+		elseif v:IsA("UIStroke") then 
+			v:SetAttribute("Thickness", v.Thickness)
+			v:SetAttribute("Transparency", v:GetAttribute("Transparency"))
+			v.Thickness = 0 
+			v.Transparency = 1
 		end
 	end
 
 	for i, _ in(Dictionary) do 
-		if tostring(i) == GUI.Frame.InteractiveElements:FindFirstChild(i).Name then 
+		if tostring(i) == GUI.Frame.InteractiveElements:WaitForChild(i).Name then 
 			--//#ASSUMING v:IsA("TextLabel") and v:IsADescendantOf("GUI") >> true
 			local v = GUI.Frame.InteractiveElements[i]
 			local ElementNumber : number = tonumber(v.Name)
 			v.Symbol.Text = Dictionary[ElementNumber].Symbol
 			v.ElementName.Text = Dictionary[ElementNumber].ElementName
-            v.AtomicNumber.Text = Dictionary[ElementNumber].AtomicNumber
+			v.AtomicNumber.Text = Dictionary[ElementNumber].AtomicNumber
 			--
 
 			for index, value in(Dictionary[ElementNumber]) do 
@@ -142,26 +157,76 @@ function Init.ClientListener()
 				--//#FAIL SAFE
 				ApplyAttributes(v, ElementNumber)
 			end
-
+			
+			Tween(v, 1, "BackgroundTransparency", v:GetAttribute("BackgroundTransparency"))
+			v.BackgroundColor3 = ElementIndex[Dictionary[ElementNumber].ElementGroup].Color
+			for _, v in(v:GetDescendants()) do 
+				if v:IsA("TextLabel") or v:IsA("TextButton") then
+					Tween(v, 1, "BackgroundTransparency", v:GetAttribute("BackgroundTransparency"))
+					Tween(v, 1, "TextTransparency", v:GetAttribute("TextTransparency"))
+				end
+			end
+			
 			v.Activated:Connect(function() 
 				warn(v.Name .. " selected");
+				for index = #GUI.Frame.InteractiveElements:GetChildren(), 1, -1 do 
+					local Target = GUI.Frame.InteractiveElements[index]
+					Target.Active = false 
+					Tween(Target, 1, "BackgroundTransparency", 1)
+					for _, bxc in(Target:GetDescendants()) do 
+						if bxc:IsA("TextLabel") or bxc:IsA("TextButton") then
+							Tween(bxc, 1, "BackgroundTransparency", 1)
+							Tween(bxc, 1, "TextTransparency", 1)
+						end
+					end
+					--task.wait()
+				end
+				task.delay(1, function() 
+					GUI.Frame.Visible = false 
+				end)
+				--
+				ElementTemplate.BackgroundColor3 = ElementIndex[Dictionary[ElementNumber].ElementGroup].Color
+				ElementTemplate.Symbol.Text = v:GetAttribute("Symbol")
+				ElementTemplate.ElementName.Text = v:GetAttribute("ElementName")
+				ElementTemplate.AtomicNumber.Text = v:GetAttribute("AtomicNumber")
+				
+				InformationName.Text = v:GetAttribute("ElementName")
+				InformationElementGroup.Text = v:GetAttribute("ElementGroup")
+				InformationGroup.Text = "Group: " .. v:GetAttribute("Group")
+				InformationPeriod.Text = "Period: " .. v:GetAttribute("Period")
+				InformationDescription.Text = v:GetAttribute("Description")
+				InformationAtomicMass.Text = "Atomic Mass: " .. v:GetAttribute("AtomicMass") .. "u"
+				
+				Tween(Information, 1, "BackgroundTransparency", Information:GetAttribute("BackgroundTransparency"))
+				Tween(Information.UIStroke, 1, "Thickness", Information.UIStroke:GetAttribute("Thickness"))
+				Tween(Information.UIStroke, 1, "Transparency", Information.UIStroke:GetAttribute("Transparency"))
+				for _, TextElements in(Information:GetDescendants()) do 
+					if TextElements:IsA("TextButton") or TextElements:IsA("TextLabel") then 
+						Tween(TextElements, 1, "TextTransparency", TextElements:GetAttribute("TextTransparency"))
+						Tween(TextElements, 1, "BackgroundTransparency", TextElements:GetAttribute("BackgroundTransparency"))
+					end
+				end
 			end)
 
-			v.MouseEnter:Connect(function() 
-				Tween(v, 1, "BackgroundColor", Color3.fromRGB(147, 147, 147)); --TODO: Make this a gray color
+			v.MouseEnter:Connect(function()
+				if v.BackgroundTransparency > .5 then return end 
+				local hue, saturation = v.BackgroundColor3:ToHSV()
+				local newValue = 7 / 10 
+				
+				Tween(v, 1.5, "BackgroundColor3", Color3.fromHSV(hue, saturation, newValue)); 
 				Tween(v.ElementName, .5, "TextTransparency", 0);
 			end)
 
 			v.MouseLeave:Connect(function() 
-				Tween(v, 1, "BackgroundColor", ElementIndex[Dictionary[ElementNumber].ElementGroup].Color);
+				if v.BackgroundTransparency > .5 then return end 
+				Tween(v, 1, "BackgroundColor3", ElementIndex[Dictionary[ElementNumber].ElementGroup].Color);
 				Tween(v.ElementName, .5, "TextTransparency", 1);
 			end)
+			task.wait()
 		end
 	end
 
 end
 
-function Init.ServerListener()
-end
 
 return Init 
