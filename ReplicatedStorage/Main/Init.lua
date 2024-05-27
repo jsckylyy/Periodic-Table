@@ -101,6 +101,10 @@ local function ApplyAttributes(Target : any, ElementNumber : number)
 	Target:SetAttribute("ElementGroup", Dictionary[ElementNumber].ElementGroup)
 end
 
+local function CalculateElectrons(AtomicNumber : number)
+
+end
+
 local BackActive = false 
 local TargetPage = nil
 
@@ -117,6 +121,54 @@ local function EnableBackButton(BackButton : TextButton, Boolean : boolean, Targ
 			Tween(BackButton, 1, "BackgroundTransparency", BackButton:GetAttribute("BackgroundTransparency"))
 		end
 	end)
+end
+
+function createBohrDiagram(centerPosition: Vector3, Electrons : number)
+	local nucleusRadius : number = 5
+	local electronShellDistance : number = 5
+	local electronSize : number = 1
+
+	local bohrModel : Model = Instance.new("Model")
+	bohrModel.Name = "BohrDiagram"
+	bohrModel.Parent = game.Workspace
+
+	local electronShells : any = {}
+	local electronsLeft = Electrons
+	local shellNumber = 1
+
+	while electronsLeft > 0 do
+		local maxElectronsInShell = 2 * shellNumber^2
+		local electronsInShell = math.min(maxElectronsInShell, electronsLeft)
+		electronsLeft = electronsLeft - electronsInShell
+
+		local Shell : Model = Instance.new("Model")
+		Shell.Name = "Shell" .. shellNumber
+		Shell.Parent = bohrModel
+		table.insert(electronShells, Shell)
+
+		for i = 1, electronsInShell do
+			local Angle = (i - 1) * (2 * math.pi / electronsInShell)
+			local x = math.cos(Angle) * electronShellDistance * shellNumber
+			local z = math.sin(Angle) * electronShellDistance * shellNumber
+
+			local Electron : BasePart = Instance.new("Part")
+			Electron.Shape = Enum.PartType.Ball
+			Electron.Size = Vector3.new(electronSize, electronSize, electronSize)
+			Electron.Position = centerPosition + Vector3.new(x, 0, z)
+			Electron.BrickColor = BrickColor.Blue()
+			Electron.Material = Enum.Material.Neon
+			Electron.Anchored = true
+			Electron.Parent = Shell
+			Electron.Transparency = 1 
+			Electron.CastShadow = false 
+			Tween(Electron, 1, "Transparency", 0)
+			task.wait()
+		end
+
+		shellNumber += 1
+	end
+	
+	return bohrModel
 end
 
 function Init.ClientListener()
@@ -136,6 +188,12 @@ function Init.ClientListener()
 	local InformationPeriod : TextLabel = Information.Period
 	local InformationGroup : TextLabel = Information.Group
 	local InformationDescription : TextLabel = Information.Description
+
+	local Camera : Camera = workspace.CurrentCamera
+	Camera.CameraType = Enum.CameraType.Scriptable
+	Camera.CFrame = workspace.CameraPart.CFrame
+
+	local InitialToggle = false 
 
 	--//Initial Load GUI
 	for _, v in(GUI:GetDescendants()) do 
@@ -159,9 +217,9 @@ function Init.ClientListener()
 			v.Transparency = 1
 		end
 	end
-	
+
 	Information.Visible = false 
-	
+
 	local BackStrokeActive = false 
 	BackButton.MouseEnter:Connect(function()
 		if BackStrokeActive then return end 
@@ -175,7 +233,7 @@ function Init.ClientListener()
 			BackStrokeActive = false 
 		end)
 	end)
-	
+
 	BackButton.MouseLeave:Connect(function()
 		if not BackStrokeActive then return end 
 		BackStrokeActive = false 
@@ -183,6 +241,7 @@ function Init.ClientListener()
 	BackButton.Activated:Connect(function()
 		if BackActive then 
 			BackActive = false 
+			GUI.Frame:SetAttribute("SelectedElement", nil)
 			if Information.Visible then 
 				task.delay(1, function() 
 					Information.Visible = false 
@@ -248,6 +307,7 @@ function Init.ClientListener()
 
 			v.Activated:Connect(function() 
 				if v.BackgroundTransparency > .5 then return end 
+				if not InitialToggle then return end
 				Information.Visible = true 
 				--warn(v.Name .. " selected");
 				for index = #GUI.Frame.InteractiveElements:GetChildren(), 1, -1 do 
@@ -286,7 +346,25 @@ function Init.ClientListener()
 						Tween(TextElements, 1, "BackgroundTransparency", TextElements:GetAttribute("BackgroundTransparency"))
 					end
 				end
+				GUI.Frame:SetAttribute("SelectedElement", v.Name)
+				--//BOHR DIAGRAM
+				local Nucleus : UnionOperation = workspace.Nucleus
+				if Nucleus.Transparency ~= 0 then 
+					Tween(Nucleus, 1, "Transparency", 0)
+				end
+				local Bohr = createBohrDiagram(Nucleus.Position, v:GetAttribute("AtomicNumber"))
 				EnableBackButton(BackButton, true, GUI.Frame)
+				task.spawn(function() 
+					repeat task.wait(.3) until GUI.Frame:GetAttribute("SelectedElement") ~= v.Name
+					for _, v in(Bohr:GetDescendants()) do 
+						if v:IsA("BasePart") then 
+							Tween(v, 1, "Transparency", 1)
+							task.wait()
+						end
+					end
+					Tween(Nucleus, 1, "Transparency", 1)
+					task.delay(1, Bohr.Destroy, Bohr)
+				end)
 			end)
 
 			v.MouseEnter:Connect(function()
@@ -306,7 +384,7 @@ function Init.ClientListener()
 			task.wait()
 		end
 	end
-
+	InitialToggle = true 
 end
 
 
