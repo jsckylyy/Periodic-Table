@@ -1,699 +1,727 @@
 --!nocheck
 local Init = {}
 
---//@Services 
-local Services = setmetatable({}, {
-	__index = function(self, Service)
-		return game:GetService(Service)
-	end,
-})
---//ServiceDiplomacies 
-local Players = Services.Players
-local TweenService, Tweens = Services.TweenService, Services.TweenService 
-local UserInputService = Services.UserInputService 
-local RunService = Services.RunService 
+-- @Services
+local GetService = game.GetService
+local Players = GetService(game, "Players")
+local TweenService = GetService(game, "TweenService")
+local UserInputService = GetService(game, "UserInputService")
+local RunService = GetService(game, "RunService")
 
---//@Start Dependencies
-local Player = game.Players.LocalPlayer 
-local Character = Player.Character or Player.CharacterAdded:Wait()
-local Camera = workspace.CurrentCamera
+-- @Dependencies
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Dictionary = require(ReplicatedStorage.Dictionaries.Elements)
+local ElementIndex = require(ReplicatedStorage.Dictionaries.Index)
 
---//@Legacy Abbreviations 
-local mouse : Mouse = Player:GetMouse() 
+-- @Variables
+local LOCAL_PLAYER = Players.LocalPlayer
+local CAMERA = workspace.CurrentCamera
+local CHARACTER = LOCAL_PLAYER and (LOCAL_PLAYER.Character or LOCAL_PLAYER.CharacterAdded:Wait())
 
---//@Local Functions 
-local function zoomCam(amount : number , duration : number) 
-	local tween = Tweens:Create(
-		Camera,
-		(TweenInfo.new)(duration), 
-		{FieldOfView = amount}
-	)
-	tween:Play() 
-	task.delay(duration - -(math.cos(10)), tween.Destroy, tween) 
-end
-
-local function Tween(instance : any, durationid : number, prop : string, value : any)
-	local tween = Tweens:Create(
-		instance, 
-		TweenInfo.new(durationid), 
-		{[prop] = value}
-	)
-	tween:Play() 
-	task.delay(durationid + .5, tween.Destroy, tween)
-end
-
-function Rotate(player, mouse)
-	if mouse then 
-		--/Rotate 
-		local bg = Instance.new("BodyGyro")
-		bg.Name = "Rotate"
-		bg.Parent = player.Character.PrimaryPart
-		bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
-		bg.P = 10000000
-		bg.D = 10000
-		local mouseLocation = Vector3.new(mouse.X, player.Character.PrimaryPart.Position.Y, mouse.Z)
-		bg.CFrame = CFrame.new(player.Character.HumanoidRootPart.Position, mouseLocation)
-		task.delay(.2, bg.Destroy, bg)	
+-- @Utilities
+local function safeDelay(seconds, fn, ...)
+	if type(fn) == "function" then
+		task.delay(seconds, fn, ...)
 	end
 end
 
+local function Tween(instance, duration, props)
+	assert(instance, "Tween: missing instance")
+	assert(duration and type(duration) == "number", "Tween: invalid duration")
+
+	local tweenInfo = TweenInfo.new(duration)
+	local tween = TweenService:Create(instance, tweenInfo, props)
+	tween:Play()
+
+	safeDelay(duration + 0.5, function()
+		if tween.Destroy then
+			tween:Destroy()
+		end
+	end)
+
+	return tween
+end
+
+local function zoomCam(amount, duration)
+	if not CAMERA then return end
+	Tween(CAMERA, duration, { FieldOfView = amount })
+end
+
+local function RotateToMouse(player, mousePosition)
+	if not player or not player.Character or not player.Character.PrimaryPart then
+		return
+	end
+
+	local root = player.Character.PrimaryPart
+	local bg = Instance.new("BodyGyro")
+	bg.Name = "Rotate"
+	bg.Parent = root
+	bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+	bg.P = 1e7
+	bg.D = 1e4
+
+	local target = Vector3.new(mousePosition.X, root.Position.Y, mousePosition.Z)
+	bg.CFrame = CFrame.new(root.Position, target)
+
+	safeDelay(0.2, function()
+		if bg and bg.Destroy then
+			bg:Destroy()
+		end
+	end)
+end
+
+local function _makeMouseRaycastParams(excludeList)
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = excludeList or {}
+	return params
+end
 
 local function getMouseHit()
-	local raycastParams = RaycastParams.new()
-	raycastParams.FilterType = Enum.RaycastFilterType.Exclude
-	raycastParams.FilterDescendantsInstances = {Character, workspace.Debris}
-	local mouseLocation = UserInputService:GetMouseLocation()
-
-	local viewportPointRay = Camera:ViewportPointToRay(mouseLocation.X, mouseLocation.Y)
-	local RayResult = workspace:Raycast(viewportPointRay.Origin, viewportPointRay.Direction * 1000, raycastParams)
-	if RayResult then
-		return RayResult.Instance 
-	end
+	local mousePos = UserInputService:GetMouseLocation()
+	local ray = CAMERA:ViewportPointToRay(mousePos.X, mousePos.Y)
+	local params = _makeMouseRaycastParams({ CHARACTER, workspace.Debris })
+	local result = workspace:Raycast(ray.Origin, ray.Direction * 1000, params)
+	return result and result.Instance or nil
 end
 
-local function getMousePos()	
-	local raycastParams = RaycastParams.new()
-	raycastParams.FilterType = Enum.RaycastFilterType.Exclude
-	raycastParams.FilterDescendantsInstances = {Character, workspace.Debris}
-
-	local mouseLocation = UserInputService:GetMouseLocation()
-	local viewportPointRay = Camera:ViewportPointToRay(mouseLocation.X, mouseLocation.Y)
-	local RayResult = workspace:Raycast(viewportPointRay.Origin, viewportPointRay.Direction * 1000, raycastParams)
-	if RayResult then
-		return RayResult.Position
-	end
-	--//Shift/Viewport Ray @: return nil, (viewportPointRay.Origin + viewportPointRay.Direction * 1000)
-end 
-
-local Dictionary : any = require(game.ReplicatedStorage.Dictionaries.Elements)
-local ElementIndex : any = require(game.ReplicatedStorage.Dictionaries.Index)
-
-local function ApplyAttributes(Target : any, ElementNumber : number)
-	Target:SetAttribute("Symbol", Dictionary[ElementNumber].Symbol)
-	Target:SetAttribute("ElementName", Dictionary[ElementNumber].ElementName)
-	Target:SetAttribute("AtomicNumber", Dictionary[ElementNumber].AtomicNumber)
-	Target:SetAttribute("Description", Dictionary[ElementNumber].Description)
-
-	Target:SetAttribute("Group", Dictionary[ElementNumber].Group)
-	Target:SetAttribute("Period", Dictionary[ElementNumber].Period)
-
-	Target:SetAttribute("AtomicMass", Dictionary[ElementNumber].AtomicMass)
-	Target:SetAttribute("ElementGroup", Dictionary[ElementNumber].ElementGroup)
+local function getMousePos()
+	local mousePos = UserInputService:GetMouseLocation()
+	local ray = CAMERA:ViewportPointToRay(mousePos.X, mousePos.Y)
+	local params = _makeMouseRaycastParams({ CHARACTER, workspace.Debris })
+	local result = workspace:Raycast(ray.Origin, ray.Direction * 1000, params)
+	return result and result.Position or nil
 end
 
-local BackActive = false 
+local function ApplyAttributes(target, elementNumber)
+	local info = Dictionary[elementNumber]
+	if not (target and info) then return end
+
+	target:SetAttribute("Symbol", info.Symbol)
+	target:SetAttribute("ElementName", info.ElementName)
+	target:SetAttribute("AtomicNumber", info.AtomicNumber)
+	target:SetAttribute("Description", info.Description)
+	target:SetAttribute("Group", info.Group)
+	target:SetAttribute("Period", info.Period)
+	target:SetAttribute("AtomicMass", info.AtomicMass)
+	target:SetAttribute("ElementGroup", info.ElementGroup)
+end
+
+local BackActive = false
 local TargetPage = nil
+local function EnableBackButton(backButton, enable, targetFrame)
+	BackActive = enable
+	TargetPage = targetFrame
 
-local function EnableBackButton(BackButton : TextButton, Boolean : boolean, TargetFrame : Frame)
-	BackActive = Boolean
-	TargetPage = TargetFrame
-	--
-	task.delay(.5, function() 
-		if Boolean then 
-			BackButton.Visible = true 
-			Tween(BackButton.UIStroke, 1, "Transparency", BackButton.UIStroke:GetAttribute("Transparency"))
-			Tween(BackButton.UIStroke, 1, "Thickness", BackButton.UIStroke:GetAttribute("Thickness"))
-			Tween(BackButton, 1, "TextTransparency", BackButton:GetAttribute("TextTransparency"))
-			Tween(BackButton, 1, "BackgroundTransparency", BackButton:GetAttribute("BackgroundTransparency"))
+	safeDelay(0.5, function()
+		if enable then
+			backButton.Visible = true
+			if backButton.UIStroke then
+				Tween(backButton.UIStroke, 1, {
+					Transparency = backButton.UIStroke:GetAttribute("Transparency"),
+					Thickness = backButton.UIStroke:GetAttribute("Thickness"),
+				})
+			end
+			Tween(backButton, 1, {
+				TextTransparency = backButton:GetAttribute("TextTransparency"),
+				BackgroundTransparency = backButton:GetAttribute("BackgroundTransparency"),
+			})
 		end
 	end)
 end
 
-local function EnableModesButton(ModesButton : TextButton, Boolean : boolean)
-	task.delay(.5, function() 
-		if Boolean then 
-			ModesButton.Visible = true 
-			Tween(ModesButton.UIStroke, 1, "Transparency", ModesButton.UIStroke:GetAttribute("Transparency"))
-			Tween(ModesButton.UIStroke, 1, "Thickness", ModesButton.UIStroke:GetAttribute("Thickness"))
-			Tween(ModesButton, 1, "TextTransparency", ModesButton:GetAttribute("TextTransparency"))
-			Tween(ModesButton, 1, "BackgroundTransparency", ModesButton:GetAttribute("BackgroundTransparency"))
+local function EnableModesButton(modesButton, enable)
+	safeDelay(0.5, function()
+		if enable then
+			modesButton.Visible = true
+			if modesButton.UIStroke then
+				Tween(modesButton.UIStroke, 1, {
+					Transparency = modesButton.UIStroke:GetAttribute("Transparency"),
+					Thickness = modesButton.UIStroke:GetAttribute("Thickness"),
+				})
+			end
+			Tween(modesButton, 1, {
+				TextTransparency = modesButton:GetAttribute("TextTransparency"),
+				BackgroundTransparency = modesButton:GetAttribute("BackgroundTransparency"),
+			})
 		end
 	end)
 end
 
-function createBohrDiagram(centerPosition: Vector3, Electrons : number)
-	local nucleusRadius : number = 5
-	local electronShellDistance : number = 5
-	local electronSize : number = 1
+local function createBohrDiagram(centerPosition, electronCount)
+	local nucleusRadius = 5
+	local shellSpacing = 5
+	local electronSize = 1
 
-	local bohrModel : Model = Instance.new("Model")
-	bohrModel.Name = "BohrDiagram"
-	bohrModel.Parent = game.Workspace
+	local bohr = Instance.new("Model")
+	bohr.Name = "BohrDiagram"
+	bohr.Parent = workspace
 
-	local electronShells : any = {}
-	local electronsLeft = Electrons
-	local shellNumber = 1
+	local shells = {}
+	local remaining = electronCount or 0
+	local shell = 1
 
-	while electronsLeft > 0 do
-		local maxElectronsInShell = 2 * shellNumber^2
-		local electronsInShell = math.min(maxElectronsInShell, electronsLeft)
-		electronsLeft = electronsLeft - electronsInShell
+	while remaining > 0 do
+		local maxInShell = 2 * (shell ^ 2)
+		local inShell = math.min(maxInShell, remaining)
+		remaining = remaining - inShell
 
-		local Shell : Model = Instance.new("Model")
-		Shell.Name = "Shell" .. shellNumber
-		Shell.Parent = bohrModel
-		table.insert(electronShells, Shell)
+		local shellModel = Instance.new("Model")
+		shellModel.Name = "Shell" .. tostring(shell)
+		shellModel.Parent = bohr
+		table.insert(shells, shellModel)
 
-		for i = 1, electronsInShell do
-			local Angle = (i - 1) * (2 * math.pi / electronsInShell)
-			local x = math.cos(Angle) * electronShellDistance * shellNumber
-			local z = math.sin(Angle) * electronShellDistance * shellNumber
+		for i = 1, inShell do
+			local angle = (i - 1) * (2 * math.pi / inShell)
+			local x = math.cos(angle) * shellSpacing * shell
+			local z = math.sin(angle) * shellSpacing * shell
 
-			local Electron : BasePart = Instance.new("Part")
-			Electron.Shape = Enum.PartType.Ball
-			Electron.Size = Vector3.new(electronSize, electronSize, electronSize)
-			Electron.Position = centerPosition + Vector3.new(x, 0, z)
-			Electron.BrickColor = BrickColor.Blue()
-			Electron.Material = Enum.Material.Neon
-			Electron.Anchored = true
-			Electron.Parent = Shell
-			Electron.Transparency = 1 
-			Electron.CastShadow = false 
-			Tween(Electron, 1, "Transparency", 0)
+			local p = Instance.new("Part")
+			p.Shape = Enum.PartType.Ball
+			p.Size = Vector3.new(electronSize, electronSize, electronSize)
+			p.Position = centerPosition + Vector3.new(x, 0, z)
+			p.BrickColor = BrickColor.Blue()
+			p.Material = Enum.Material.Neon
+			p.Anchored = true
+			p.CastShadow = false
+			p.Parent = shellModel
+			p.Transparency = 1
+			Tween(p, 1, { Transparency = 0 })
 			task.wait()
 		end
-		shellNumber += 1
-	end
-	task.spawn(function()
-		while true do
-			for _, shell in pairs(electronShells) do
-				if not shell or not shell.Parent then
-					break
-				end
 
-				for _, electron in pairs(shell:GetChildren()) do
-					if electron:IsA("Part") then
-						local angle = math.rad(1)  -- Adjust the speed of rotation here
-						local position = electron.Position - centerPosition
-						local newX = position.X * math.cos(angle) - position.Z * math.sin(angle)
-						local newZ = position.X * math.sin(angle) + position.Z * math.cos(angle)
-						electron.Position = centerPosition + Vector3.new(newX, 0, newZ)
+		shell += 1
+	end
+
+	task.spawn(function()
+		while bohr.Parent do
+			for _, s in ipairs(shells) do
+				if not s.Parent then break end
+				for _, e in ipairs(s:GetChildren()) do
+					if e:IsA("BasePart") then
+						local relative = e.Position - centerPosition
+						local ang = math.rad(1)
+						local newX = relative.X * math.cos(ang) - relative.Z * math.sin(ang)
+						local newZ = relative.X * math.sin(ang) + relative.Z * math.cos(ang)
+						e.Position = centerPosition + Vector3.new(newX, 0, newZ)
 					end
 				end
 			end
 			task.wait()
 		end
 	end)
-	return bohrModel
+
+	return bohr
 end
 
 function Init.ClientListener()
-	local Player : Player = game.Players.LocalPlayer 
-	local Character : Character = Player.Character or Player.CharacterAdded:Wait() 
+	local player = LOCAL_PLAYER
+	if not player then return end
 
-	local GUI : ScreenGui = Player.PlayerGui:WaitForChild("Table")
-	local Frame : Frame = GUI.Frame 
+	local character = player.Character or player.CharacterAdded:Wait()
+	local gui = player:WaitForChild("PlayerGui"):WaitForChild("Table")
+	local frame = gui.Frame
 
-	local Modes : Frame = GUI.ModeFrame 
-	local TableButton : TextButton = Modes.Table 
+	local modesFrame = gui.ModeFrame
+	local tableButton = modesFrame.Table
+	local molarMassButton = modesFrame.MolarMass
 
-	local MolarMassButton : TextButton = Modes.MolarMass 
-	local MolarInformation : Frame = GUI.MassInformation 
-	local MolarMass : Frame = GUI.MolarMass
+	local molarInfoFrame = gui.MassInformation
+	local molarMassPanel = gui.MolarMass
 
-	local BackButton : TextButton = GUI.Back
-	local SelectionStroke : UIStroke = GUI.SelectStroke
+	local backButton = gui.Back
+	local selectionStroke = gui.SelectStroke
 
-	local Information : Frame = GUI.Information 
-	local InformationName : TextLabel = Information.ElementName
-	local ElementTemplate : TextButton = Information.Template 
-	local InformationAtomicMass : TextLabel = Information.AtomicMass
-	local InformationElementGroup : TextLabel = Information.ElementGroup
-	local InformationPeriod : TextLabel = Information.Period
-	local InformationGroup : TextLabel = Information.Group
-	local InformationDescription : TextLabel = Information.Description
+	local information = gui.Information
+	local elementTemplate = information.Template
 
-	local Camera : Camera = workspace.CurrentCamera
-	Camera.CameraType = Enum.CameraType.Scriptable
-	Camera.CFrame = workspace:WaitForChild("CameraPart").CFrame
+	CAMERA.CameraType = Enum.CameraType.Scriptable
+	local cameraPart = workspace:FindFirstChild("CameraPart")
+	if cameraPart then
+		CAMERA.CFrame = cameraPart.CFrame
+	end
 
-	local InitialToggle = false 
+	local initialToggle = false
 
 	local function PeriodicTable()
-		task.wait(.3)
-		Frame.Visible = true
-		GUI.MassInformation.Visible = false 
-		GUI.MolarMass.Visible = false 
-		task.delay(.5, function() 
-			InitialToggle = true 
+		task.wait(0.3)
+		frame.Visible = true
+		molarInfoFrame.Visible = false
+		molarMassPanel.Visible = false
+
+		safeDelay(0.5, function()
+			initialToggle = true
 		end)
-		for i, _ in(Dictionary) do 
-			if tostring(i) == GUI.Frame.InteractiveElements:WaitForChild(i).Name then 
-				--//#ASSUMING v:IsA("TextLabel") and v:IsADescendantOf("GUI") >> true
-				local v = GUI.Frame.InteractiveElements[i]
-				local ElementNumber : number = tonumber(v.Name)
-				v.Symbol.Text = Dictionary[ElementNumber].Symbol
-				v.ElementName.Text = Dictionary[ElementNumber].ElementName
-				v.AtomicNumber.Text = Dictionary[ElementNumber].AtomicNumber
-				--
 
-				for index, value in(Dictionary[ElementNumber]) do 
-					v:SetAttribute(index, value)
+		for index, info in pairs(Dictionary) do
+			local elementFrame = frame.InteractiveElements:FindFirstChild(tostring(index))
+			if not elementFrame then
+				continue
+			end
+
+			elementFrame.Symbol.Text = info.Symbol
+			elementFrame.ElementName.Text = info.ElementName
+			elementFrame.AtomicNumber.Text = info.AtomicNumber
+
+			for k, v in pairs(info) do
+				elementFrame:SetAttribute(k, v)
+			end
+
+			if elementFrame:GetAttribute("Symbol") ~= info.Symbol then
+				ApplyAttributes(elementFrame, index)
+			end
+
+			elementFrame.BackgroundColor3 = ElementIndex[info.ElementGroup].Color
+			Tween(elementFrame, 1, {
+				BackgroundTransparency = elementFrame:GetAttribute("BackgroundTransparency")
+			})
+
+			for _, child in ipairs(elementFrame:GetDescendants()) do
+				if child:IsA("TextLabel") or child:IsA("TextButton") then
+					Tween(child, 1, {
+						BackgroundTransparency = child:GetAttribute("BackgroundTransparency"),
+						TextTransparency = child:GetAttribute("TextTransparency")
+					})
 				end
+			end
 
-				if v:GetAttribute("Symbol") ~= Dictionary[ElementNumber] then 
-					--//#FAIL SAFE
-					ApplyAttributes(v, ElementNumber)
-				end
+			elementFrame.Activated:Connect(function()
+				if elementFrame.BackgroundTransparency > 0.5 then return end
+				if not initialToggle then return end
 
-				Tween(v, 1, "BackgroundTransparency", v:GetAttribute("BackgroundTransparency"))
-				v.BackgroundColor3 = ElementIndex[Dictionary[ElementNumber].ElementGroup].Color
-				for _, v in(v:GetDescendants()) do 
-					if v:IsA("TextLabel") or v:IsA("TextButton") then
-						Tween(v, 1, "BackgroundTransparency", v:GetAttribute("BackgroundTransparency"))
-						Tween(v, 1, "TextTransparency", v:GetAttribute("TextTransparency"))
-					end
-				end
+				information.Visible = true
 
-				v.Activated:Connect(function() 
-					if v.BackgroundTransparency > .5 then return end 
-					if not InitialToggle then return end
-					Information.Visible = true 
-					--warn(v.Name .. " selected");
-					for index = #GUI.Frame.InteractiveElements:GetChildren(), 1, -1 do 
-						local Target = GUI.Frame.InteractiveElements[index]
-						Tween(Target, 1, "BackgroundTransparency", 1)
-						for _, y in(Target:GetDescendants()) do 
-							if y:IsA("TextLabel") or y:IsA("TextButton") then
-								Tween(y, 1, "BackgroundTransparency", 1)
-								Tween(y, 1, "TextTransparency", 1)
-							end
-						end
-						--task.wait()
-					end
-					task.delay(1, function() 
-						GUI.Frame.Visible = false 
-					end)
-					--
-					ElementTemplate.BackgroundColor3 = ElementIndex[Dictionary[ElementNumber].ElementGroup].Color
-					ElementTemplate.Symbol.Text = v:GetAttribute("Symbol")
-					ElementTemplate.ElementName.Text = v:GetAttribute("ElementName")
-					ElementTemplate.AtomicNumber.Text = v:GetAttribute("AtomicNumber")
-
-					InformationName.Text = v:GetAttribute("ElementName")
-					InformationElementGroup.Text = v:GetAttribute("ElementGroup")
-					InformationGroup.Text = "Group: " .. v:GetAttribute("Group")
-					InformationPeriod.Text = "Period: " .. v:GetAttribute("Period")
-					InformationDescription.Text = v:GetAttribute("Description")
-					InformationAtomicMass.Text = "Atomic Mass: " .. v:GetAttribute("AtomicMass") .. "u"
-
-					Tween(Information, 1, "BackgroundTransparency", Information:GetAttribute("BackgroundTransparency"))
-					Tween(Information.UIStroke, 1, "Thickness", Information.UIStroke:GetAttribute("Thickness"))
-					Tween(Information.UIStroke, 1, "Transparency", Information.UIStroke:GetAttribute("Transparency"))
-					for _, TextElements in(Information:GetDescendants()) do 
-						if TextElements:IsA("TextButton") or TextElements:IsA("TextLabel") then 
-							Tween(TextElements, 1, "TextTransparency", TextElements:GetAttribute("TextTransparency"))
-							Tween(TextElements, 1, "BackgroundTransparency", TextElements:GetAttribute("BackgroundTransparency"))
+				for i = #frame.InteractiveElements:GetChildren(), 1, -1 do
+					local target = frame.InteractiveElements:GetChildren()[i]
+					Tween(target, 1, { BackgroundTransparency = 1 })
+					for _, y in ipairs(target:GetDescendants()) do
+						if y:IsA("TextLabel") or y:IsA("TextButton") then
+							Tween(y, 1, {
+								BackgroundTransparency = 1,
+								TextTransparency = 1
+							})
 						end
 					end
-					GUI.Frame:SetAttribute("SelectedElement", v.Name)
-					--//BOHR DIAGRAM
-					local Nucleus : UnionOperation = workspace.Nucleus
-					if Nucleus.Transparency ~= 0 then 
-						Tween(Nucleus, 1, "Transparency", 0)
+				end
+
+				task.delay(1, function()
+					frame.Visible = false
+				end)
+
+				elementTemplate.BackgroundColor3 = ElementIndex[info.ElementGroup].Color
+				elementTemplate.Symbol.Text = elementFrame:GetAttribute("Symbol")
+				elementTemplate.ElementName.Text = elementFrame:GetAttribute("ElementName")
+				elementTemplate.AtomicNumber.Text = elementFrame:GetAttribute("AtomicNumber")
+
+				information.ElementName.Text = elementFrame:GetAttribute("ElementName")
+				information.ElementGroup.Text = elementFrame:GetAttribute("ElementGroup")
+				information.Group.Text = "Group: " .. tostring(elementFrame:GetAttribute("Group"))
+				information.Period.Text = "Period: " .. tostring(elementFrame:GetAttribute("Period"))
+				information.Description.Text = elementFrame:GetAttribute("Description")
+				information.AtomicMass.Text = "Atomic Mass: " .. tostring(elementFrame:GetAttribute("AtomicMass")) .. "u"
+
+				Tween(information, 1, {
+					BackgroundTransparency = information:GetAttribute("BackgroundTransparency")
+				})
+				if information.UIStroke then
+					Tween(information.UIStroke, 1, {
+						Thickness = information.UIStroke:GetAttribute("Thickness"),
+						Transparency = information.UIStroke:GetAttribute("Transparency")
+					})
+				end
+
+				for _, e in ipairs(information:GetDescendants()) do
+					if e:IsA("TextButton") or e:IsA("TextLabel") then
+						Tween(e, 1, {
+							TextTransparency = e:GetAttribute("TextTransparency"),
+							BackgroundTransparency = e:GetAttribute("BackgroundTransparency")
+						})
 					end
-					local Bohr = createBohrDiagram(Nucleus.Position, v:GetAttribute("AtomicNumber"))
-					EnableBackButton(BackButton, true, GUI.Frame)
-					task.spawn(function() 
-						repeat task.wait(.3) until GUI.Frame:GetAttribute("SelectedElement") ~= v.Name
-						for _, v in(Bohr:GetDescendants()) do 
-							if v:IsA("BasePart") then 
-								Tween(v, 1, "Transparency", 1)
+				end
+
+				gui.Frame:SetAttribute("SelectedElement", tostring(index))
+
+				local nucleus = workspace:FindFirstChild("Nucleus")
+				if nucleus then
+					if nucleus.Transparency ~= 0 then
+						Tween(nucleus, 1, { Transparency = 0 })
+					end
+					local bohr = createBohrDiagram(nucleus.Position, elementFrame:GetAttribute("AtomicNumber"))
+
+					EnableBackButton(backButton, true, gui.Frame)
+
+					task.spawn(function()
+						repeat task.wait(0.3) until gui.Frame:GetAttribute("SelectedElement") ~= tostring(index)
+						for _, part in ipairs(bohr:GetDescendants()) do
+							if part:IsA("BasePart") then
+								Tween(part, 1, { Transparency = 1 })
 								task.wait()
 							end
 						end
-						Tween(Nucleus, 1, "Transparency", 1)
-						task.delay(1, Bohr.Destroy, Bohr)
+
+						if nucleus then
+							Tween(nucleus, 1, { Transparency = 1 })
+						end
+
+						task.delay(1, function()
+							if bohr.Destroy then bohr:Destroy() end
+						end)
 					end)
-				end)
+				end
+			end)
 
-				v.MouseEnter:Connect(function()
-					if v.BackgroundTransparency > .5 then return end 
-					local hue, saturation = v.BackgroundColor3:ToHSV()
-					local newValue = 7 / 10 
+			elementFrame.MouseEnter:Connect(function()
+				if elementFrame.BackgroundTransparency > 0.5 then return end
+				local h, s, _ = elementFrame.BackgroundColor3:ToHSV()
+				local newValue = 0.7
+				Tween(elementFrame, 1.5, { BackgroundColor3 = Color3.fromHSV(h, s, newValue) })
+				Tween(elementFrame.ElementName, 0.5, { TextTransparency = 0 })
+			end)
 
-					Tween(v, 1.5, "BackgroundColor3", Color3.fromHSV(hue, saturation, newValue)); 
-					Tween(v.ElementName, .5, "TextTransparency", 0);
-				end)
+			elementFrame.MouseLeave:Connect(function()
+				if elementFrame.BackgroundTransparency > 0.5 then return end
+				Task = Tween(elementFrame, 1, { BackgroundColor3 = ElementIndex[info.ElementGroup].Color })
+				Tween(elementFrame.ElementName, 0.5, { TextTransparency = 1 })
+			end)
 
-				v.MouseLeave:Connect(function() 
-					if v.BackgroundTransparency > .5 then return end 
-					Tween(v, 1, "BackgroundColor3", ElementIndex[Dictionary[ElementNumber].ElementGroup].Color);
-					Tween(v.ElementName, .5, "TextTransparency", 1);
-				end)
-				task.wait()
-			end
+			task.wait()
 		end
-		InitialToggle = true 
+
+		initialToggle = true
 	end
 
-	local function MolarMass()
-		GUI.MolarMass.Visible = true 
-		local SelectedElements = {}
-		--
-		for i, _ in(Dictionary) do 
-			if tostring(i) == GUI.MolarMass.InteractiveElements:WaitForChild(i).Name then 
-				--//#ASSUMING v:IsA("TextLabel") and v:IsADescendantOf("GUI") >> true
-				local v = GUI.MolarMass.InteractiveElements[i]
-				local ElementNumber : number = tonumber(v.Name)
-				v.Symbol.Text = Dictionary[ElementNumber].Symbol
-				v.ElementName.Text = Dictionary[ElementNumber].ElementName
-				v.AtomicNumber.Text = Dictionary[ElementNumber].AtomicNumber
-				--
+	local function MolarMassMode()
+		molarMassPanel.Visible = true
+		local selected = {}
 
-				for index, value in(Dictionary[ElementNumber]) do 
-					v:SetAttribute(index, value)
+		for index, info in pairs(Dictionary) do
+			local elementFrame = molarMassPanel.InteractiveElements:FindFirstChild(tostring(index))
+			if not elementFrame then
+				continue
+			end
+
+			elementFrame.Symbol.Text = info.Symbol
+			elementFrame.ElementName.Text = info.ElementName
+			elementFrame.AtomicNumber.Text = info.AtomicNumber
+
+			for k, v in pairs(info) do
+				elementFrame:SetAttribute(k, v)
+			end
+
+			if elementFrame:GetAttribute("Symbol") ~= info.Symbol then
+				ApplyAttributes(elementFrame, index)
+			end
+
+			elementFrame.BackgroundColor3 = ElementIndex[info.ElementGroup].Color
+			Tween(elementFrame, 1, { BackgroundTransparency = elementFrame:GetAttribute("BackgroundTransparency") })
+
+			for _, child in ipairs(elementFrame:GetDescendants()) do
+				if child:IsA("TextLabel") or child:IsA("TextButton") then
+					Tween(child, 1, {
+						TextTransparency = child:GetAttribute("TextTransparency"),
+						BackgroundTransparency = child:GetAttribute("BackgroundTransparency")
+					})
 				end
+			end
 
-				if v:GetAttribute("Symbol") ~= Dictionary[ElementNumber] then 
-					--//#FAIL SAFE
-					ApplyAttributes(v, ElementNumber)
-				end
+			elementFrame.Activated:Connect(function()
+				if elementFrame.BackgroundTransparency > 0.5 then return end
 
-				Tween(v, 1, "BackgroundTransparency", v:GetAttribute("BackgroundTransparency"))
-				v.BackgroundColor3 = ElementIndex[Dictionary[ElementNumber].ElementGroup].Color
-				for _, v in(v:GetDescendants()) do 
-					if v:IsA("TextLabel") or v:IsA("TextButton") then
-						Tween(v, 1, "BackgroundTransparency", v:GetAttribute("BackgroundTransparency"))
-						Tween(v, 1, "TextTransparency", v:GetAttribute("TextTransparency"))
+				local highlight = elementFrame:FindFirstChild("SelectStroke") or selectionStroke:Clone()
+				highlight.Parent = elementFrame
+
+				if table.find(selected, index) then
+					local idx = table.find(selected, index)
+					while idx do
+						table.remove(selected, idx)
+						idx = table.find(selected, index)
 					end
+					Tween(highlight, 0.5, { Transparency = 1, Thickness = 0 })
+					safeDelay(0.5, function() if highlight.Destroy then highlight:Destroy() end end)
+				else
+					table.insert(selected, index)
+					Tween(highlight, 0.5, { Transparency = 0, Thickness = 1 })
 				end
 
-				v.Activated:Connect(function() 
-					if v.BackgroundTransparency > .5 then return end 
-					local Highlight = v:FindFirstChild("SelectStroke") or SelectionStroke:Clone() 
-					Highlight.Parent = v 
-					if table.find(SelectedElements, ElementNumber) then 
-						--warn("Removing " .. ElementNumber .. " from table")
-						local index = table.find(SelectedElements, ElementNumber)
-						while index do
-							table.remove(SelectedElements, index)
-							index = table.find(SelectedElements, ElementNumber)
-						end
-						--table.remove(SelectedElements, ElementNumber)
-						Tween(Highlight, .5, "Transparency", 1)
-						Tween(Highlight, .5, "Thickness", 0)
-						task.delay(.5, Highlight.Destroy, Highlight)
-					else 
-						table.insert(SelectedElements, ElementNumber)
-						Tween(Highlight, .5, "Transparency", 0)
-						Tween(Highlight, .5, "Thickness", 1)
+				Tween(molarInfoFrame.Table, 0.3, { TextTransparency = 1 })
+				safeDelay(0.3, function()
+					Tween(molarInfoFrame.Table, 0.3, { TextTransparency = 0 })
+					molarInfoFrame.Table.Text = table.concat(selected, " + ")
+					local total = 0
+					for _, n in ipairs(selected) do
+						total = total + (Dictionary[n].AtomicMass or 0)
 					end
-					Tween(GUI.MassInformation.Table, .3, "TextTransparency", 1)
-					task.delay(.3, function() 
-						Tween(GUI.MassInformation.Table, .3, "TextTransparency", 0)
-						GUI.MassInformation.Table.Text = table.concat(SelectedElements, " + ")
-						--
-						local TotalMass = 0
-						for _, AtomicNumber in(SelectedElements) do 
-							TotalMass += Dictionary[AtomicNumber].AtomicMass
-						end
-						TotalMass = math.floor(TotalMass * 100)
-						MolarInformation.Result.Text = tostring(TotalMass/100)
-					end)
+					local rounded = math.floor(total * 100 + 0.5) / 100
+					molarInfoFrame.Result.Text = tostring(rounded)
 				end)
+			end)
 
-				v.MouseEnter:Connect(function()
-					if v.BackgroundTransparency > .5 then return end 
-					local hue, saturation = v.BackgroundColor3:ToHSV()
-					local newValue = 7 / 10 
+			elementFrame.MouseEnter:Connect(function()
+				if elementFrame.BackgroundTransparency > 0.5 then return end
+				local h, s = elementFrame.BackgroundColor3:ToHSV()
+				Tween(elementFrame, 1.5, { BackgroundColor3 = Color3.fromHSV(h, s, 0.7) })
+				Tween(elementFrame.ElementName, 0.5, { TextTransparency = 0 })
+			end)
 
-					Tween(v, 1.5, "BackgroundColor3", Color3.fromHSV(hue, saturation, newValue)); 
-					Tween(v.ElementName, .5, "TextTransparency", 0);
-				end)
+			elementFrame.MouseLeave:Connect(function()
+				if elementFrame.BackgroundTransparency > 0.5 then return end
+				Tween(elementFrame, 1, { BackgroundColor3 = ElementIndex[info.ElementGroup].Color })
+				Tween(elementFrame.ElementName, 0.5, { TextTransparency = 1 })
+			end)
 
-				v.MouseLeave:Connect(function() 
-					if v.BackgroundTransparency > .5 then return end 
-					Tween(v, 1, "BackgroundColor3", ElementIndex[Dictionary[ElementNumber].ElementGroup].Color);
-					Tween(v.ElementName, .5, "TextTransparency", 1);
-				end)
-				task.wait()
+			task.wait()
+		end
+
+		molarInfoFrame.Visible = true
+		Tween(molarInfoFrame, 1, { BackgroundTransparency = molarInfoFrame:GetAttribute("BackgroundTransparency") })
+		if molarInfoFrame.UIStroke then
+			Tween(molarInfoFrame.UIStroke, 1, {
+				Thickness = molarInfoFrame.UIStroke:GetAttribute("Thickness"),
+				Transparency = molarInfoFrame.UIStroke:GetAttribute("Transparency")
+			})
+		end
+		Tween(molarInfoFrame.Frame, 1, { BackgroundTransparency = 0 })
+
+		for _, e in ipairs(molarInfoFrame:GetDescendants()) do
+			if e:IsA("TextButton") or e:IsA("TextLabel") then
+				Tween(e, 1, {
+					TextTransparency = e:GetAttribute("TextTransparency"),
+					BackgroundTransparency = e:GetAttribute("BackgroundTransparency")
+				})
+			elseif e:IsA("UIStroke") then
+				Tween(e, 1, {
+					Thickness = e:GetAttribute("Thickness"),
+					Transparency = e:GetAttribute("Transparency")
+				})
 			end
 		end
-		MolarInformation.Visible = true 
-		Tween(MolarInformation, 1, "BackgroundTransparency", MolarInformation:GetAttribute("BackgroundTransparency"))
-		Tween(MolarInformation.UIStroke, 1, "Thickness", MolarInformation.UIStroke:GetAttribute("Thickness"))
-		Tween(MolarInformation.UIStroke, 1, "Transparency", MolarInformation.UIStroke:GetAttribute("Transparency"))
-		Tween(MolarInformation.Frame, 1, "BackgroundTransparency", 0)
-		for _, TextElements in(MolarInformation:GetDescendants()) do 
-			if TextElements:IsA("TextButton") or TextElements:IsA("TextLabel") then 
-				Tween(TextElements, 1, "TextTransparency", TextElements:GetAttribute("TextTransparency"))
-				Tween(TextElements, 1, "BackgroundTransparency", TextElements:GetAttribute("BackgroundTransparency"))
-			elseif TextElements:IsA("UIStroke") then 
-				Tween(TextElements, 1, "Thickness", TextElements:GetAttribute("Thickness"))
-				Tween(TextElements, 1, "Transparency", TextElements:GetAttribute("Transparency"))
-			end
-		end
-		
-		MolarInformation.Clear.Activated:Connect(function()
-			Tween(MolarInformation.Clear, .5, "BackgroundColor3", Color3.fromRGB(0, 0, 0))
-			Tween(MolarInformation.Clear, .5, "TextColor3", Color3.fromRGB(255, 255, 255))
-			task.delay(.5, function() 
-				Tween(MolarInformation.Clear, .5, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
-				Tween(MolarInformation.Clear, .5, "TextColor3", Color3.fromRGB(0, 0, 0))
-			end)
-			--
-			table.clear(SelectedElements)
-			
-			MolarInformation.Result.Text = " "
 
-			Tween(GUI.MassInformation.Table, .3, "TextTransparency", 1)
-			task.delay(.3, function() 
-				Tween(GUI.MassInformation.Table, .3, "TextTransparency", 0)
-				GUI.MassInformation.Table.Text = table.concat(SelectedElements, " + ")
+		molarInfoFrame.Clear.Activated:Connect(function()
+			Tween(molarInfoFrame.Clear, 0.5, { BackgroundColor3 = Color3.fromRGB(0, 0, 0), TextColor3 = Color3.fromRGB(255, 255, 255) })
+			safeDelay(0.5, function()
+				Tween(molarInfoFrame.Clear, 0.5, { BackgroundColor3 = Color3.fromRGB(255, 255, 255), TextColor3 = Color3.fromRGB(0, 0, 0) })
 			end)
-			for _, v in(GUI.MolarMass.InteractiveElements:GetDescendants()) do 
-				if v:IsA("UIStroke") and v.Name == "SelectStroke" then 
-					Tween(v, .5, "Transparency", 1)
-					task.delay(.5, v.Destroy, v)
+
+			table.clear(selected)
+			molarInfoFrame.Result.Text = " "
+
+			Tween(gui.MassInformation.Table, 0.3, { TextTransparency = 1 })
+			safeDelay(0.3, function()
+				Tween(gui.MassInformation.Table, 0.3, { TextTransparency = 0 })
+				gui.MassInformation.Table.Text = table.concat(selected, " + ")
+			end)
+
+			for _, v in ipairs(molarMassPanel.InteractiveElements:GetDescendants()) do
+				if v:IsA("UIStroke") and v.Name == "SelectStroke" then
+					Tween(v, 0.5, { Transparency = 1 })
+					safeDelay(0.5, function() if v.Destroy then v:Destroy() end end)
 				end
 			end
 		end)
-		--
-		MolarInformation.Clear.MouseEnter:Connect(function()
-			if MolarInformation.Clear:GetAttribute("MouseEnter") then return end 
-			MolarInformation.Clear:SetAttribute("MouseEnter", true)
-			task.spawn(function() 
+
+		molarInfoFrame.Clear.MouseEnter:Connect(function()
+			if molarInfoFrame.Clear:GetAttribute("MouseEnter") then return end
+			molarInfoFrame.Clear:SetAttribute("MouseEnter", true)
+			task.spawn(function()
 				repeat
-					MolarInformation.Clear.UIStroke.UIGradient.Rotation += 1
+					if molarInfoFrame.Clear.UIStroke and molarInfoFrame.Clear.UIStroke.UIGradient then
+						molarInfoFrame.Clear.UIStroke.UIGradient.Rotation += 1
+					end
 					task.wait()
-				until not MolarInformation.Clear:GetAttribute("MouseEnter")
+				until not molarInfoFrame.Clear:GetAttribute("MouseEnter")
 			end)
-
 		end)
 
-		MolarInformation.Clear.MouseLeave:Connect(function()
-			if not MolarInformation.Clear:GetAttribute("MouseEnter") then return end 
-			MolarInformation.Clear:SetAttribute("MouseEnter", false)
+		molarInfoFrame.Clear.MouseLeave:Connect(function()
+			molarInfoFrame.Clear:SetAttribute("MouseEnter", false)
 		end)
-		--
-		
 	end
-	--//Initial Load GUI
-	for _, v in(GUI:GetDescendants()) do 
-		if v:IsA("Frame") then 
+
+	for _, v in ipairs(gui:GetDescendants()) do
+		if v:IsA("Frame") then
 			v:SetAttribute("BackgroundTransparency", v.BackgroundTransparency)
 			v:SetAttribute("BackgroundColor", v.BackgroundColor3)
-			v.BackgroundTransparency = 1 
+			v.BackgroundTransparency = 1
 		elseif v:IsA("ImageLabel") or v:IsA("ImageButton") then
 			v:SetAttribute("BackgroundTransparency", v.BackgroundTransparency)
-			v:SetAttribute("ImageTransparency", v.ImageTransparency) 
-			v.ImageTransparency = 1 
+			v:SetAttribute("ImageTransparency", v.ImageTransparency)
+			v.ImageTransparency = 1
 			v.BackgroundTransparency = 1
-		elseif v:IsA("TextLabel") or v:IsA("TextButton") then 
+		elseif v:IsA("TextLabel") or v:IsA("TextButton") then
 			v:SetAttribute("BackgroundTransparency", v.BackgroundTransparency)
-			v:SetAttribute("TextTransparency", v.TextTransparency) 
-			v.TextTransparency = 1 
+			v:SetAttribute("TextTransparency", v.TextTransparency)
+			v.TextTransparency = 1
 			v.BackgroundTransparency = 1
-		elseif v:IsA("UIStroke") then 
+		elseif v:IsA("UIStroke") then
 			v:SetAttribute("Thickness", v.Thickness)
 			v:SetAttribute("Transparency", v.Transparency)
-			v.Thickness = 0 
+			v.Thickness = 0
 			v.Transparency = 1
 		end
-		--task.wait()
 	end
 
-	Information.Visible = false 
-	local BackStrokeActive = false 
-	BackButton.MouseEnter:Connect(function()
-		if BackStrokeActive then return end 
-		BackStrokeActive = true 
-		task.spawn(function() 
-			repeat 
-				--Tween(BackButton.UIStroke.UIGradient, 1, "Rotation", BackButton.UIStroke.UIGradient.Rotation + math.random(1,3))
-				BackButton.UIStroke.UIGradient.Rotation += math.random(1,3)
+	information.Visible = false
+
+	local backStrokeActive = false
+	backButton.MouseEnter:Connect(function()
+		if backStrokeActive then return end
+		backStrokeActive = true
+		task.spawn(function()
+			repeat
+				if backButton.UIStroke and backButton.UIStroke.UIGradient then
+					backButton.UIStroke.UIGradient.Rotation += math.random(1, 3)
+				end
 				task.wait()
-			until not BackStrokeActive
-			BackStrokeActive = false 
+			until not backStrokeActive
+			backStrokeActive = false
 		end)
 	end)
 
-	BackButton.MouseLeave:Connect(function()
-		if not BackStrokeActive then return end 
-		BackStrokeActive = false 
+	backButton.MouseLeave:Connect(function()
+		backStrokeActive = false
 	end)
-	BackButton.Activated:Connect(function()
-		if BackActive then 
-			BackActive = false 
-			GUI.Frame:SetAttribute("SelectedElement", nil)
-			if Information.Visible then 
-				task.delay(1, function() 
-					Information.Visible = false 
-				end)
-			end
-			--
-			for _, v in(GUI:GetDescendants()) do 
-				if v:IsA("Frame") then 
-					Tween(v, 1, "BackgroundTransparency", 1)
-				elseif v:IsA("ImageLabel") or v:IsA("ImageButton") then
-					Tween(v, 1, "BackgroundTransparency", 1)
-					Tween(v, 1, "ImageTransparency", 1)
-				elseif v:IsA("TextLabel") or v:IsA("TextButton") and v.Name ~= "ModesButton" then 
-					Tween(v, 1, "BackgroundTransparency", 1)
-					Tween(v, 1, "TextTransparency", 1)
-				elseif v:IsA("UIStroke") and v.Parent.Name ~= "ModesButton" then 
-					Tween(v, 1, "Thickness", 0)
-					Tween(v, 1, "Transparency", 1)
-				end
-			end
-			--
-			TargetPage.Visible = true
-			Tween(TargetPage, 1, "BackgroundTransparency", TargetPage:GetAttribute("BackgroundTransparency"))
-			for _, v in(TargetPage:GetDescendants()) do 
-				if v:IsA("TextButton") or v:IsA("TextLabel") then 
-					Tween(v, 1, "BackgroundTransparency", v:GetAttribute("BackgroundTransparency"))
-					Tween(v, 1, "TextTransparency", v:GetAttribute("TextTransparency"))
-				elseif v:IsA("UIStroke") then 
-					Tween(v, 1, "Thickness", v:GetAttribute("Thickness"))
-					Tween(v, 1, "Transparency", v:GetAttribute("Transparency"))
-				end
-			end
+
+	backButton.Activated:Connect(function()
+		if not BackActive then return end
+		BackActive = false
+		gui.Frame:SetAttribute("SelectedElement", nil)
+
+		if information.Visible then
+			task.delay(1, function() information.Visible = false end)
 		end
-	end)
 
-	Modes.Visible = true 
-	Tween(Modes, 1, "BackgroundTransparency", Modes:GetAttribute("BackgroundTransparency"))
-	for _, v in(Modes:GetDescendants()) do 
-		if v:IsA("TextButton") or v:IsA("TextLabel") then 
-			Tween(v, 1, "TextTransparency", v:GetAttribute("TextTransparency"))
-			Tween(v, 1, "BackgroundTransparency", v:GetAttribute("BackgroundTransparency"))
-		elseif v:IsA("UIStroke") then 
-			Tween(v, 1, "Thickness", v:GetAttribute("Thickness"))
-			Tween(v, 1, "Transparency", v:GetAttribute("Transparency"))
-		end
-	end
-
-	local InteractiveButtons = {}
-	table.insert(InteractiveButtons, TableButton)
-	table.insert(InteractiveButtons, MolarMassButton)
-
-	for _, InteractiveElement in(InteractiveButtons) do 
-		InteractiveElement.MouseEnter:Connect(function()
-			if InteractiveElement:GetAttribute("MouseEnter") then return end 
-			InteractiveElement:SetAttribute("MouseEnter", true)
-			task.spawn(function() 
-				repeat
-					InteractiveElement.UIStroke.UIGradient.Rotation += 1
-					task.wait()
-				until not InteractiveElement:GetAttribute("MouseEnter")
-			end)
-
-		end)
-
-		InteractiveElement.MouseLeave:Connect(function()
-			if not InteractiveElement:GetAttribute("MouseEnter") then return end 
-			InteractiveElement:SetAttribute("MouseEnter", false)
-		end)
-
-		InteractiveElement.Activated:Connect(function()
-			if InteractiveElement.Transparency > .1 then return end 
-			local Mode = InteractiveElement.Name 
-			GUI:SetAttribute("SelectedMode", Mode)
-
-			for _, v in(Modes:GetDescendants()) do 
-				if v:IsA("TextButton") or v:IsA("TextLabel") then 
-					Tween(v, 1, "BackgroundTransparency", 1)
-					Tween(v, 1, "TextTransparency", 1)
-				elseif v:IsA("UIStroke") then 
-					Tween(v, 1, "Thickness", 0)
-					Tween(v, 1, "Transparency", 1)
-				end
-			end
-			Tween(Modes, 1, "BackgroundTransparency", 0)
-			Tween(Modes, 1, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
-			task.delay(1, function() 
-				Tween(Modes, 1, "BackgroundColor3", Modes:GetAttribute("BackgroundColor"))
-				Tween(Modes, 1, "BackgroundTransparency", 1)
-				task.delay(1, function() Modes.Visible = false end)
-			end)
-			
-			EnableModesButton(GUI.ModesButton, true)
-			if GUI:GetAttribute("SelectedMode") == "Table" then 
-				PeriodicTable()
-			end
-
-			if GUI:GetAttribute("SelectedMode") == "MolarMass" then 
-				MolarMass()
-			end
-			
-			if GUI:GetAttribute("SelectedMode") == "Conversion" then 
-				--Conversion()
-			end
-		end)
-		
-	end
-
-	local ModesStroke = false 
-	GUI.ModesButton.MouseEnter:Connect(function()
-		if ModesStroke then return end 
-		ModesStroke = true 
-		task.spawn(function() 
-			repeat 
-				GUI.ModesButton.UIStroke.UIGradient.Rotation += math.random(1,3)
-				task.wait()
-			until not ModesStroke
-			ModesStroke = false 
-		end)
-	end)
-
-	GUI.ModesButton.MouseLeave:Connect(function()
-		if not ModesStroke then return end 
-		ModesStroke = false 
-	end)
-
-	GUI.ModesButton.Activated:Connect(function()
-		BackActive = false 
-		GUI.Frame:SetAttribute("SelectedElement", nil)
-		for _, v in(GUI:GetDescendants()) do 
-			if v:IsA("Frame") then 
-				Tween(v, 1, "BackgroundTransparency", 1)
+		for _, v in ipairs(gui:GetDescendants()) do
+			if v:IsA("Frame") then
+				Tween(v, 1, { BackgroundTransparency = 1 })
 			elseif v:IsA("ImageLabel") or v:IsA("ImageButton") then
-				Tween(v, 1, "BackgroundTransparency", 1)
-				Tween(v, 1, "ImageTransparency", 1)
-			elseif v:IsA("TextLabel") or v:IsA("TextButton") then 
-				Tween(v, 1, "BackgroundTransparency", 1)
-				Tween(v, 1, "TextTransparency", 1)
-			elseif v:IsA("UIStroke") then 
-				Tween(v, 1, "Thickness", 0)
-				Tween(v, 1, "Transparency", 1)
+				Tween(v, 1, { BackgroundTransparency = 1, ImageTransparency = 1 })
+			elseif (v:IsA("TextLabel") or v:IsA("TextButton")) and v.Name ~= "ModesButton" then
+				Tween(v, 1, { BackgroundTransparency = 1, TextTransparency = 1 })
+			elseif v:IsA("UIStroke") and v.Parent and v.Parent.Name ~= "ModesButton" then
+				Tween(v, 1, { Thickness = 0, Transparency = 1 })
 			end
 		end
-		--
-		Modes.Visible = true 
-		Tween(Modes, 1, "BackgroundTransparency", Modes:GetAttribute("BackgroundTransparency"))
-		for _, v in(Modes:GetDescendants()) do 
-			if v:IsA("TextButton") or v:IsA("TextLabel") then 
-				Tween(v, 1, "BackgroundTransparency", v:GetAttribute("BackgroundTransparency"))
-				Tween(v, 1, "TextTransparency", v:GetAttribute("TextTransparency"))
-			elseif v:IsA("UIStroke") then 
-				Tween(v, 1, "Thickness", v:GetAttribute("Thickness"))
-				Tween(v, 1, "Transparency", v:GetAttribute("Transparency"))
+
+		if TargetPage then
+			TargetPage.Visible = true
+			Tween(TargetPage, 1, { BackgroundTransparency = TargetPage:GetAttribute("BackgroundTransparency") })
+			for _, c in ipairs(TargetPage:GetDescendants()) do
+				if c:IsA("TextButton") or c:IsA("TextLabel") then
+					Tween(c, 1, {
+						BackgroundTransparency = c:GetAttribute("BackgroundTransparency"),
+						TextTransparency = c:GetAttribute("TextTransparency")
+					})
+				elseif c:IsA("UIStroke") then
+					Tween(c, 1, { Thickness = c:GetAttribute("Thickness"), Transparency = c:GetAttribute("Transparency") })
+				end
 			end
 		end
 	end)
 
+	modesFrame.Visible = true
+	Tween(modesFrame, 1, { BackgroundTransparency = modesFrame:GetAttribute("BackgroundTransparency") })
+	for _, v in ipairs(modesFrame:GetDescendants()) do
+		if v:IsA("TextButton") or v:IsA("TextLabel") then
+			Tween(v, 1, { TextTransparency = v:GetAttribute("TextTransparency"), BackgroundTransparency = v:GetAttribute("BackgroundTransparency") })
+		elseif v:IsA("UIStroke") then
+			Tween(v, 1, { Thickness = v:GetAttribute("Thickness"), Transparency = v:GetAttribute("Transparency") })
+		end
+	end
+
+	local interactiveButtons = { tableButton, molarMassButton }
+	for _, btn in ipairs(interactiveButtons) do
+		btn.MouseEnter:Connect(function()
+			if btn:GetAttribute("MouseEnter") then return end
+			btn:SetAttribute("MouseEnter", true)
+			task.spawn(function()
+				repeat
+					if btn.UIStroke and btn.UIStroke.UIGradient then
+						btn.UIStroke.UIGradient.Rotation += 1
+					end
+					task.wait()
+				until not btn:GetAttribute("MouseEnter")
+			end)
+		end)
+
+		btn.MouseLeave:Connect(function()
+			btn:SetAttribute("MouseEnter", false)
+		end)
+
+		btn.Activated:Connect(function()
+			if btn.Transparency > 0.1 then return end
+			local mode = btn.Name
+			gui:SetAttribute("SelectedMode", mode)
+
+			for _, v in ipairs(modesFrame:GetDescendants()) do
+				if v:IsA("TextButton") or v:IsA("TextLabel") then
+					Tween(v, 1, { BackgroundTransparency = 1, TextTransparency = 1 })
+				elseif v:IsA("UIStroke") then
+					Tween(v, 1, { Thickness = 0, Transparency = 1 })
+				end
+			end
+
+			Tween(modesFrame, 1, { BackgroundTransparency = 0, BackgroundColor3 = Color3.fromRGB(255, 255, 255) })
+			safeDelay(1, function()
+				Tween(modesFrame, 1, { BackgroundColor3 = modesFrame:GetAttribute("BackgroundColor"), BackgroundTransparency = 1 })
+				safeDelay(1, function() modesFrame.Visible = false end)
+			end)
+
+			EnableModesButton(gui.ModesButton, true)
+
+			if gui:GetAttribute("SelectedMode") == "Table" then
+				PeriodicTable()
+			elseif gui:GetAttribute("SelectedMode") == "MolarMass" then
+				MolarMassMode()
+			elseif gui:GetAttribute("SelectedMode") == "Conversion" then
+			end
+		end)
+	end
+
+	local modesStroke = false
+	gui.ModesButton.MouseEnter:Connect(function()
+		if modesStroke then return end
+		modesStroke = true
+		task.spawn(function()
+			repeat
+				if gui.ModesButton.UIStroke and gui.ModesButton.UIStroke.UIGradient then
+					gui.ModesButton.UIStroke.UIGradient.Rotation += math.random(1, 3)
+				end
+				task.wait()
+			until not modesStroke
+			modesStroke = false
+		end)
+	end)
+
+	gui.ModesButton.MouseLeave:Connect(function()
+		modesStroke = false
+	end)
+
+	gui.ModesButton.Activated:Connect(function()
+		BackActive = false
+		gui.Frame:SetAttribute("SelectedElement", nil)
+
+		for _, v in ipairs(gui:GetDescendants()) do
+			if v:IsA("Frame") then
+				Tween(v, 1, { BackgroundTransparency = 1 })
+			elseif v:IsA("ImageLabel") or v:IsA("ImageButton") then
+				Tween(v, 1, { BackgroundTransparency = 1, ImageTransparency = 1 })
+			elseif v:IsA("TextLabel") or v:IsA("TextButton") then
+				Tween(v, 1, { BackgroundTransparency = 1, TextTransparency = 1 })
+			elseif v:IsA("UIStroke") then
+				Tween(v, 1, { Thickness = 0, Transparency = 1 })
+			end
+		end
+
+		modesFrame.Visible = true
+		Tween(modesFrame, 1, { BackgroundTransparency = modesFrame:GetAttribute("BackgroundTransparency") })
+		for _, v in ipairs(modesFrame:GetDescendants()) do
+			if v:IsA("TextButton") or v:IsA("TextLabel") then
+				Tween(v, 1, { BackgroundTransparency = v:GetAttribute("BackgroundTransparency"), TextTransparency = v:GetAttribute("TextTransparency") })
+			elseif v:IsA("UIStroke") then
+				Tween(v, 1, { Thickness = v:GetAttribute("Thickness"), Transparency = v:GetAttribute("Transparency") })
+			end
+		end
+	end)
 end
 
-
-return Init 
+return Init
